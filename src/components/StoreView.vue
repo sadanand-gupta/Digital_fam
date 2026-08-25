@@ -8,7 +8,12 @@ import StarRating from './StarRating.vue'
 import { useUsedReviews } from '../composables/useUsedReviews'
 import { bestReviewTarget } from '../data/mapsLinks'
 
-const props = defineProps<{ store: Store; copiedId: string | null }>()
+const props = defineProps<{
+  store: Store
+  copiedId: string | null
+  /** True when this is the public site's only listing — hides the directory link. */
+  single?: boolean
+}>()
 const emit = defineEmits<{ copy: [review: Review]; back: [] }>()
 
 const { isUsed, resetMany } = useUsedReviews()
@@ -83,7 +88,7 @@ function restoreAll() {
     <section class="hero">
       <div class="wash" aria-hidden="true" />
       <div class="container">
-        <button class="back" type="button" @click="emit('back')">
+        <button v-if="!single" class="back" type="button" @click="emit('back')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M19 12H5M11 18l-6-6 6-6" />
           </svg>
@@ -126,7 +131,7 @@ function restoreAll() {
                 </dt>
                 <dd>{{ store.hours }}</dd>
               </div>
-              <div>
+              <div v-if="store.phone">
                 <dt>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />

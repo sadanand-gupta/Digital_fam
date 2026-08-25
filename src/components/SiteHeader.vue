@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const emit = defineEmits<{ home: [] }>()
+withDefaults(defineProps<{
+  isAdmin?: boolean
+  /** In-page anchors only exist on the directory, so hide them elsewhere. */
+  showNav?: boolean
+}>(), { isAdmin: false, showNav: false })
+
+const emit = defineEmits<{ home: []; signOut: [] }>()
 
 const scrolled = ref(false)
 const dark = ref(false)
@@ -40,8 +46,19 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
       </button>
 
       <nav class="nav">
-        <a href="#stores" class="link">Stores</a>
-        <a href="#how" class="link">How it works</a>
+        <template v-if="showNav">
+          <a href="#stores" class="link">Stores</a>
+          <a href="#how" class="link">How it works</a>
+        </template>
+
+        <button v-if="isAdmin" class="admin" type="button" @click="emit('signOut')">
+          <span class="badge" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+            </svg>
+          </span>
+          Sign out
+        </button>
         <button
           class="theme"
           type="button"
@@ -130,6 +147,32 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 }
 
 .link:hover { color: var(--ink); background: var(--bg-sunken); }
+
+.admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.admin:hover { color: var(--ink); border-color: var(--line-2); }
+
+.badge {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+}
 
 .theme {
   display: grid;

@@ -1,24 +1,50 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { stores, storeBySlug } from './data/stores'
+import { PUBLIC_STORE_SLUG } from './data/adminConfig'
 import type { Review } from './types'
 import { useClipboard } from './composables/useClipboard'
 import { useRoute } from './composables/useRoute'
 import { useUsedReviews } from './composables/useUsedReviews'
+import { useAdmin } from './composables/useAdmin'
 import { bestReviewTarget } from './data/mapsLinks'
 import SiteHeader from './components/SiteHeader.vue'
 import HomeView from './components/HomeView.vue'
 import StoreView from './components/StoreView.vue'
 import CopyToast from './components/CopyToast.vue'
+import AdminLogin from './components/AdminLogin.vue'
 
 const { path, navigate } = useRoute()
 const { copy, copiedId } = useClipboard()
 const { markUsed } = useUsedReviews()
+const { isAdmin, signOut } = useAdmin()
+
+/**
+ * The single listing the public sees at '/'. Admins get the full directory
+ * there instead. A missing slug is a config error, so fall back to the first
+ * store rather than showing visitors an empty site.
+ */
+const publicStore = computed(() => storeBySlug(PUBLIC_STORE_SLUG) ?? stores[0])
 
 const activeStore = computed(() => {
   const m = path.value.match(/^store\/(.+)$/)
-  return m ? storeBySlug(m[1]) : undefined
+  if (!m) return undefined
+  const store = storeBySlug(m[1])
+  if (!store) return undefined
+  // Visitors may only open the public listing, so guessing another slug in the
+  // URL does not expose the rest of the directory.
+  return isAdmin.value || store.slug === publicStore.value.slug ? store : undefined
 })
+
+const onAdminRoute = computed(() => path.value === 'admin')
+
+/** The directory only ever renders for a signed-in admin. */
+const showDirectory = computed(() => isAdmin.value && !onAdminRoute.value)
+
+function handleSignOut() {
+  signOut()
+  navigate('')
+}
 
 const toast = ref(false)
 let toastTimer: ReturnType<typeof setTimeout> | undefined
@@ -53,15 +79,21 @@ watch(path, () => {
 })
 
 /** Where the toast's action button should point for the current store. */
-const reviewTarget = computed(() =>
-  activeStore.value ? bestReviewTarget(activeStore.value) : null,
-)
+const reviewTarget = computed(() => {
+  const store = activeStore.value ?? (showDirectory.value ? null : publicStore.value)
+  return store ? bestReviewTarget(store) : null
+})
 
 const year = new Date().getFullYear()
 </script>
 
 <template>
-  <SiteHeader @home="navigate('')" />
+  <SiteHeader
+    :is-admin="isAdmin"
+    :show-nav="showDirectory"
+    @home="navigate('')"
+    @sign-out="handleSignOut"
+  />
 
   <main>
     <StoreView
@@ -79,17 +111,38 @@ const year = new Date().getFullYear()
       <button class="btn btn-primary" type="button" @click="navigate('')">Browse stores</button>
     </div>
 
-    <HomeView v-else @open="navigate(`store/${$event}`)" />
+    <AdminLogin
+      v-else-if="onAdminRoute && !isAdmin"
+      @success="navigate('')"
+      @back="navigate('')"
+    />
+
+    <!-- Admins land on the full directory; visitors on the single listing. -->
+    <HomeView v-else-if="showDirectory" @open="navigate(`store/${$event}`)" />
+
+    <StoreView
+      v-else
+      :key="publicStore.slug"
+      :store="publicStore"
+      :copied-id="copiedId"
+      :single="true"
+      @copy="handleCopy"
+    />
   </main>
 
   <footer class="footer">
     <div class="container inner">
       <p class="mark">Digital<em>Fam</em></p>
       <p class="fine">
-        {{ stores.length }} businesses · Reviews are templates meant to be edited to match your
-        real experience.
+        <template v-if="showDirectory">{{ stores.length }} businesses · </template>Reviews are
+        templates meant to be edited to match your real experience.
       </p>
-      <p class="fine">© {{ year }} Digital Fam</p>
+      <p class="fine">
+        © {{ year }} Digital Fam
+        <button v-if="!isAdmin" class="admin-link" type="button" @click="navigate('admin')">
+          Admin
+        </button>
+      </p>
     </div>
   </footer>
 
@@ -140,4 +193,17 @@ const year = new Date().getFullYear()
   color: var(--ink-3);
   max-width: 52ch;
 }
+
+/* Deliberately quiet — a way in for the owner, not a call to action. */
+.admin-link {
+  margin-left: 10px;
+  font-size: inherit;
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-2);
+  transition: color 0.2s var(--ease);
+}
+
+.admin-link:hover { color: var(--ink); }
 </style>

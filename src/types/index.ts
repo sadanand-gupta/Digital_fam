@@ -35,6 +35,12 @@ export interface Store {
    * Find one at https://developers.google.com/maps/documentation/places/web-service/place-id
    */
   placeId?: string
+  /**
+   * Google CID — the number in a `maps.google.com/?cid=` link, and the decimal
+   * form of the trailing hex in a place URL's `!1s0x…:0x…` segment. Used to
+   * build the review deep link when no Place ID is available.
+   */
+  cid?: string
   /** Two-stop gradient used across the store's cards and hero */
   accent: [string, string]
   logoMark: string
