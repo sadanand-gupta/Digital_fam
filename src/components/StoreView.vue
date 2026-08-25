@@ -3,7 +3,6 @@ import { computed, ref } from 'vue'
 import type { Store, Review } from '../types'
 import { CATEGORY_LABELS } from '../types'
 import ReviewCard from './ReviewCard.vue'
-import BrandingPanel from './BrandingPanel.vue'
 import StoreBanner from './StoreBanner.vue'
 import StarRating from './StarRating.vue'
 import { useUsedReviews } from '../composables/useUsedReviews'
@@ -250,13 +249,6 @@ function restoreAll() {
           <p>No unused reviews match this combination of filters.</p>
           <button class="btn btn-ghost btn-sm" type="button" @click="reset">Clear filters</button>
         </div>
-      </div>
-    </section>
-
-    <!-- Branding -->
-    <section class="branding-wrap">
-      <div class="container">
-        <BrandingPanel :store="store" />
       </div>
     </section>
 
@@ -612,13 +604,6 @@ function restoreAll() {
   gap: 14px;
   padding: 56px 0;
   color: var(--ink-3);
-}
-
-/* Branding */
-.branding-wrap {
-  background: var(--bg-sunken);
-  border-block: 1px solid var(--line);
-  padding-bottom: 44px;
 }
 
 /* CTA band */

@@ -1,23 +1,9 @@
-import type { Store, Review, BrandingAsset } from '../types'
-import { posters } from './posters'
+import type { Store, Review } from '../types'
 
 let seq = 0
 const r = (text: string, rating: number, tone: Review['tone'], tags: string[]): Review => ({
   id: `rv-${++seq}`, text, rating, tone, tags,
 })
-
-const TITLES = { stars: 'Five-Star Card', scan: 'Scan & Review', quote: 'Quote Card', badge: 'Rating Badge' } as const
-
-const branding = (
-  name: string, a: string, b: string,
-  kinds: (keyof typeof posters)[], captions: string[],
-): BrandingAsset[] =>
-  kinds.map((k, i) => ({
-    id: `${k}-${i}`,
-    title: TITLES[k as keyof typeof TITLES],
-    caption: captions[i],
-    poster: posters[k](a, b, name),
-  }))
 
 export const stores: Store[] = [
   {
@@ -55,12 +41,6 @@ export const stores: Store[] = [
       r('Solid spot for a quick bite in Arumbakkam. Fair prices, tasty food, no fuss.', 4, 'concise', ['quick-bite']),
       r('Ordered for a small get-together and everything arrived on time and still warm. Packaging held up well on the way home.', 5, 'detailed', ['group', 'delivery', 'packaging']),
     ],
-    branding: branding('Chickato Crispy Fried Chicken', '#f59e0b', '#dc2626', ['scan', 'stars', 'quote', 'badge'], [
-      'Place near the billing counter or on the table.',
-      'Print for the entrance or menu board.',
-      'Share to Instagram stories after a visit.',
-      'Attach to takeaway bags and delivery orders.',
-    ]),
   },
 ]
 

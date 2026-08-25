@@ -8,14 +8,6 @@ export interface Review {
   tone: 'warm' | 'concise' | 'detailed' | 'enthusiastic'
 }
 
-export interface BrandingAsset {
-  id: string
-  title: string
-  caption: string
-  /** Inline SVG poster markup rendered as the visual */
-  poster: string
-}
-
 export interface Store {
   id: string
   slug: string
@@ -58,7 +50,6 @@ export interface Store {
   accent: [string, string]
   logoMark: string
   reviews: Review[]
-  branding: BrandingAsset[]
 }
 
 export const CATEGORY_LABELS: Record<StoreCategory, string> = {
