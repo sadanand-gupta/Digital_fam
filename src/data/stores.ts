@@ -36,6 +36,9 @@ export const stores: Store[] = [
     // Decimal form of 0x67ff2a7aca71306f from the listing URL. Drives the
     // direct-to-review-box link in mapsLinks.ts.
     cid: '7493755011838586991',
+    // MMDA Colony, Arumbakkam. Drives the map banner until a storefront photo
+    // is added; drop a file in public/shops/ and set bannerImage to use one.
+    coords: { lat: 13.0694, lng: 80.2143 },
     accent: ['#f59e0b', '#dc2626'],
     logoMark: 'C',
     reviews: [

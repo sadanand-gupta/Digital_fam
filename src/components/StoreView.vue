@@ -4,6 +4,7 @@ import type { Store, Review } from '../types'
 import { CATEGORY_LABELS } from '../types'
 import ReviewCard from './ReviewCard.vue'
 import BrandingPanel from './BrandingPanel.vue'
+import StoreBanner from './StoreBanner.vue'
 import StarRating from './StarRating.vue'
 import { useUsedReviews } from '../composables/useUsedReviews'
 import { bestReviewTarget } from '../data/mapsLinks'
@@ -21,41 +22,43 @@ const { isUsed, resetMany } = useUsedReviews()
 /** Prefers the review composer, falls back to the listing. */
 const reviewTarget = computed(() => bestReviewTarget(props.store))
 
-type ToneFilter = 'all' | Review['tone']
-
 /** How many reviews are visible at once; the rest wait in reserve. */
 const PAGE_SIZE = 6
 
-const tone = ref<ToneFilter>('all')
 const tag = ref<string>('all')
-
-const tones: { value: ToneFilter; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'concise', label: 'Short' },
-  { value: 'detailed', label: 'Detailed' },
-  { value: 'warm', label: 'Warm' },
-  { value: 'enthusiastic', label: 'Glowing' },
-]
 
 /** Reviews this visitor has not copied yet — the live pool. */
 const available = computed(() => props.store.reviews.filter(r => !isUsed(r.id)))
 
-const availableTones = computed(() => {
-  const present = new Set(available.value.map(r => r.tone))
-  return tones.filter(t => t.value === 'all' || present.has(t.value as Review['tone']))
-})
-
 const usedCount = computed(() => props.store.reviews.length - available.value.length)
 const exhausted = computed(() => available.value.length === 0)
 
-const tags = computed(() =>
-  [...new Set(available.value.flatMap(r => r.tags))].sort(),
-)
+/** How many topic chips to offer alongside "Any". */
+const MAX_TAGS = 5
+
+/**
+ * The topics covering the most unused reviews, so every chip leads somewhere
+ * useful. A long alphabetical list was mostly one-review dead ends.
+ */
+const tags = computed(() => {
+  const counts = new Map<string, number>()
+  for (const r of available.value) {
+    for (const t of r.tags) counts.set(t, (counts.get(t) ?? 0) + 1)
+  }
+  const top = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, MAX_TAGS)
+    .map(([t]) => t)
+
+  // A chip the user has selected must stay on screen even if it slips out of
+  // the top few as reviews are copied, or the filter becomes unclearable.
+  if (tag.value !== 'all' && !top.includes(tag.value)) top.push(tag.value)
+  return top
+})
 
 /** Reviews matching the current filters, before the display window. */
 const matching = computed(() =>
   available.value.filter(r => {
-    if (tone.value !== 'all' && r.tone !== tone.value) return false
     if (tag.value !== 'all' && !r.tags.includes(tag.value)) return false
     return true
   }),
@@ -71,7 +74,6 @@ const filtered = computed(() => matching.value.slice(0, PAGE_SIZE))
 const queued = computed(() => Math.max(0, matching.value.length - filtered.value.length))
 
 function reset() {
-  tone.value = 'all'
   tag.value = 'all'
 }
 
@@ -84,8 +86,10 @@ function restoreAll() {
 
 <template>
   <div class="page" :style="{ '--a': store.accent[0], '--b': store.accent[1] }">
+    <StoreBanner :store="store" />
+
     <!-- Store hero -->
-    <section class="hero">
+    <section class="hero has-banner">
       <div class="wash" aria-hidden="true" />
       <div class="container">
         <button v-if="!single" class="back" type="button" @click="emit('back')">
@@ -186,20 +190,6 @@ function restoreAll() {
         </header>
 
         <div class="filters">
-          <div class="row" role="group" aria-label="Filter by tone">
-            <span class="row-label">Tone</span>
-            <button
-              v-for="t in availableTones"
-              :key="t.value"
-              class="filter"
-              type="button"
-              :class="{ on: tone === t.value }"
-              @click="tone = t.value"
-            >
-              {{ t.label }}
-            </button>
-          </div>
-
           <div class="row" role="group" aria-label="Filter by topic">
             <span class="row-label">Topic</span>
             <button class="filter" type="button" :class="{ on: tag === 'all' }" @click="tag = 'all'">
@@ -297,6 +287,12 @@ function restoreAll() {
   position: relative;
   padding: 26px 0 44px;
   overflow: hidden;
+}
+
+/* The banner already supplies the top visual, so pull the hero up over it. */
+.hero.has-banner {
+  margin-top: clamp(-70px, -7vw, -40px);
+  padding-top: 0;
 }
 
 .wash {

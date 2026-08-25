@@ -3,20 +3,35 @@ import type { Store } from '../types'
 import { CATEGORY_LABELS } from '../types'
 import StarRating from './StarRating.vue'
 
-defineProps<{ store: Store; index: number }>()
-const emit = defineEmits<{ open: [slug: string] }>()
+defineProps<{
+  store: Store
+  index: number
+  /** True when this store is the one the public currently sees at '/'. */
+  isPublic?: boolean
+}>()
+
+const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>()
 </script>
 
 <template>
-  <button
+  <div
     class="store"
-    type="button"
+    :class="{ live: isPublic }"
     :style="{ '--a': store.accent[0], '--b': store.accent[1], animationDelay: `${index * 70}ms` }"
-    @click="emit('open', store.slug)"
   >
+    <button class="open" type="button" @click="emit('open', store.slug)">
+      <span class="sr-only">Open {{ store.name }}</span>
+    </button>
+
     <div class="top">
       <span class="mark" aria-hidden="true">{{ store.logoMark }}</span>
-      <span class="cat">{{ CATEGORY_LABELS[store.category] }}</span>
+      <span class="meta">
+        <span v-if="isPublic" class="live-tag">
+          <span class="pulse" aria-hidden="true" />
+          Live site
+        </span>
+        <span class="cat">{{ CATEGORY_LABELS[store.category] }}</span>
+      </span>
     </div>
 
     <h3 class="name">{{ store.name }}</h3>
@@ -36,7 +51,17 @@ const emit = defineEmits<{ open: [slug: string] }>()
         </svg>
       </span>
     </div>
-  </button>
+
+    <button
+      v-if="!isPublic"
+      class="setlive"
+      type="button"
+      @click="emit('selectPublic', store.slug)"
+    >
+      Set as live site
+    </button>
+    <p v-else class="setlive is-live">This is the public site</p>
+  </div>
 </template>
 
 <style scoped>
@@ -73,6 +98,43 @@ const emit = defineEmits<{ open: [slug: string] }>()
   border-color: var(--line-2);
 }
 
+/* Marks the shop currently served to the public. */
+.store.live {
+  border-color: color-mix(in srgb, var(--ok) 45%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ok) 22%, transparent), var(--shadow-sm);
+}
+
+/*
+ * Full-card hit area for opening the store. Sits under the real controls so
+ * "Set as live site" stays clickable, and keeps the card a single tab stop.
+ */
+.open {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.open:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Content sits above the overlay so text stays selectable and legible. */
+.top, .name, .tagline, .rating, .bottom { position: relative; z-index: 1; }
+
 .store:hover::after { transform: scaleX(1); }
 
 .top {
@@ -95,6 +157,36 @@ const emit = defineEmits<{ open: [slug: string] }>()
   color: #fff;
   background: linear-gradient(135deg, var(--a), var(--b));
   box-shadow: 0 4px 14px color-mix(in srgb, var(--a) 35%, transparent);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent);
+}
+
+.pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent);
 }
 
 .cat {
@@ -161,5 +253,35 @@ const emit = defineEmits<{ open: [slug: string] }>()
   transform: translateX(3px);
   color: #fff;
   background: linear-gradient(135deg, var(--a), var(--b));
+}
+
+.setlive {
+  position: relative;
+  z-index: 1;
+  margin-top: 10px;
+  padding: 9px 14px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.setlive:hover {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+}
+
+.setlive.is-live {
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 10%, transparent);
+  border-color: color-mix(in srgb, var(--ok) 26%, transparent);
+  text-align: center;
+  cursor: default;
 }
 </style>

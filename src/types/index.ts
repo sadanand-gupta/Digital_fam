@@ -41,6 +41,19 @@ export interface Store {
    * build the review deep link when no Place ID is available.
    */
   cid?: string
+  /**
+   * Storefront/banner image shown across the top of the store page. Put the
+   * file in public/shops/ and reference it as '/shops/<file>'; a remote URL
+   * works too. Falls back to the gradient banner when absent.
+   *
+   * Google Maps photos cannot be hotlinked — they sit behind signed, expiring
+   * URLs — so download the photo (or use the owner's own) and serve it here.
+   */
+  bannerImage?: string
+  /** Alt text for bannerImage; defaults to the store name when omitted. */
+  bannerAlt?: string
+  /** Latitude/longitude of the storefront, for the map preview. */
+  coords?: { lat: number; lng: number }
   /** Two-stop gradient used across the store's cards and hero */
   accent: [string, string]
   logoMark: string

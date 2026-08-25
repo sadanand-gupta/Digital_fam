@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { stores, storeBySlug } from './data/stores'
-import { PUBLIC_STORE_SLUG } from './data/adminConfig'
 import type { Review } from './types'
 import { useClipboard } from './composables/useClipboard'
 import { useRoute } from './composables/useRoute'
 import { useUsedReviews } from './composables/useUsedReviews'
 import { useAdmin } from './composables/useAdmin'
+import { usePublicStore } from './composables/usePublicStore'
 import { bestReviewTarget } from './data/mapsLinks'
 import SiteHeader from './components/SiteHeader.vue'
 import HomeView from './components/HomeView.vue'
@@ -19,12 +19,20 @@ const { copy, copiedId } = useClipboard()
 const { markUsed } = useUsedReviews()
 const { isAdmin, signOut } = useAdmin()
 
-/**
- * The single listing the public sees at '/'. Admins get the full directory
- * there instead. A missing slug is a config error, so fall back to the first
- * store rather than showing visitors an empty site.
- */
-const publicStore = computed(() => storeBySlug(PUBLIC_STORE_SLUG) ?? stores[0])
+/** The single listing the public sees at '/'; admins get the directory there. */
+const { publicStore, publicSlug, setPublicStore } = usePublicStore()
+
+/** Transient confirmation after an admin changes the live store. */
+const notice = ref('')
+let noticeTimer: ReturnType<typeof setTimeout> | undefined
+
+/** Picking a store from the directory makes it the site's public listing. */
+function handleSelectPublic(slug: string) {
+  setPublicStore(slug)
+  notice.value = `${publicStore.value.name} is now the live public site.`
+  clearTimeout(noticeTimer)
+  noticeTimer = setTimeout(() => { notice.value = '' }, 4000)
+}
 
 const activeStore = computed(() => {
   const m = path.value.match(/^store\/(.+)$/)
@@ -33,7 +41,7 @@ const activeStore = computed(() => {
   if (!store) return undefined
   // Visitors may only open the public listing, so guessing another slug in the
   // URL does not expose the rest of the directory.
-  return isAdmin.value || store.slug === publicStore.value.slug ? store : undefined
+  return isAdmin.value || store.slug === publicSlug.value ? store : undefined
 })
 
 const onAdminRoute = computed(() => path.value === 'admin')
@@ -70,6 +78,7 @@ async function handleCopy(review: Review) {
 onUnmounted(() => {
   clearTimeout(toastTimer)
   clearTimeout(retireTimer)
+  clearTimeout(noticeTimer)
 })
 
 /** Hide a lingering toast when the user changes page. */
@@ -95,6 +104,8 @@ const year = new Date().getFullYear()
     @sign-out="handleSignOut"
   />
 
+  <p v-if="notice" class="notice" role="status">{{ notice }}</p>
+
   <main>
     <StoreView
       v-if="activeStore"
@@ -118,7 +129,12 @@ const year = new Date().getFullYear()
     />
 
     <!-- Admins land on the full directory; visitors on the single listing. -->
-    <HomeView v-else-if="showDirectory" @open="navigate(`store/${$event}`)" />
+    <HomeView
+      v-else-if="showDirectory"
+      :public-slug="publicSlug"
+      @open="navigate(`store/${$event}`)"
+      @select-public="handleSelectPublic"
+    />
 
     <StoreView
       v-else
@@ -154,6 +170,25 @@ const year = new Date().getFullYear()
 </template>
 
 <style scoped>
+.notice {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 80;
+  transform: translateX(-50%);
+  max-width: min(92vw, 460px);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--ink);
+  background: var(--bg-elev);
+  border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent);
+  box-shadow: var(--shadow-lg);
+  animation: rise 0.4s var(--ease) both;
+}
+
 .missing {
   display: flex;
   flex-direction: column;

@@ -11,8 +11,15 @@
  * bundle. Move to a server-checked login if that ever matters.
  */
 
-/** The one store shown to the public at '/'. Must match a slug in stores.ts. */
-export const PUBLIC_STORE_SLUG = 'chickato-mmda'
+/**
+ * The store shown to the public at '/' until an admin picks a different one.
+ * Must match a slug in stores.ts. Acts as the fallback whenever no selection
+ * has been saved, or a saved slug no longer exists.
+ */
+export const DEFAULT_PUBLIC_STORE_SLUG = 'chickato-mmda'
+
+/** Key under which the admin's chosen public store is remembered. */
+export const PUBLIC_STORE_STORAGE_KEY = 'df-public-store'
 
 export const ADMIN_EMAIL = 'sadanandguptat@gmail.com'
 export const ADMIN_PASSWORD = 'Gupta@21072003'

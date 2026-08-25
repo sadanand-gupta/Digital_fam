@@ -4,7 +4,12 @@ import { stores } from '../data/stores'
 import { CATEGORY_LABELS, type StoreCategory } from '../types'
 import StoreCard from './StoreCard.vue'
 
-const emit = defineEmits<{ open: [slug: string] }>()
+defineProps<{
+  /** Slug of the store currently served to the public. */
+  publicSlug: string
+}>()
+
+const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>()
 
 const query = ref('')
 const category = ref<StoreCategory | 'all'>('all')
@@ -133,7 +138,9 @@ const steps = [
             :key="s.id"
             :store="s"
             :index="i"
+            :is-public="s.slug === publicSlug"
             @open="emit('open', $event)"
+            @select-public="emit('selectPublic', $event)"
           />
         </div>
 
