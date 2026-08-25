@@ -1,0 +1,3 @@
+# Netlify / Cloudflare Pages: serve the SPA for every path so
+# /store/<slug> works on a direct hit from a QR scan.
+/*    /index.html   200
