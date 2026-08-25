@@ -12,11 +12,11 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
       </span>
       <div class="body">
         <strong>Review copied</strong>
-        <span v-if="direct">Opens the review box — just paste and post.</span>
+        <span v-if="direct">Opens the Google Maps review box — just paste and post.</span>
         <span v-else>Open Maps and paste it in — that's it.</span>
       </div>
       <a v-if="mapsUrl" :href="mapsUrl" target="_blank" rel="noopener noreferrer" class="go">
-        {{ direct ? 'Write review' : 'Open Maps' }}
+        {{ direct ? 'Write review on Maps' : 'Open Maps' }}
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M7 17L17 7M8 7h9v9" />
         </svg>

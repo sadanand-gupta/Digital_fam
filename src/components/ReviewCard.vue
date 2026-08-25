@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Review } from '../types'
+import { SENTIMENT_LABELS } from '../types'
 import StarRating from './StarRating.vue'
 
 const props = defineProps<{
@@ -13,13 +14,6 @@ const props = defineProps<{
 const emit = defineEmits<{ copy: [review: Review] }>()
 
 const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
-
-const toneLabel: Record<Review['tone'], string> = {
-  warm: 'Warm',
-  concise: 'Short',
-  detailed: 'Detailed',
-  enthusiastic: 'Glowing',
-}
 </script>
 
 <template>
@@ -34,14 +28,10 @@ const toneLabel: Record<Review['tone'], string> = {
   >
     <div class="head">
       <StarRating :rating="review.rating" />
-      <span class="tone">{{ toneLabel[review.tone] }}</span>
+      <span class="tone">{{ SENTIMENT_LABELS[review.sentiment] }}</span>
     </div>
 
     <p class="text">{{ review.text }}</p>
-
-    <div class="tags">
-      <span v-for="t in review.tags.slice(0, 3)" :key="t" class="tag">{{ t }}</span>
-    </div>
 
     <footer class="foot">
       <span class="meta">{{ wordCount }} words</span>
@@ -71,13 +61,13 @@ const toneLabel: Record<Review['tone'], string> = {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 22px;
+  padding: 26px 24px;
   background: var(--bg-elev);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
-  animation: rise 0.5s var(--ease) both;
+  transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), border-color 0.45s var(--ease);
+  animation: settle 0.7s var(--ease) both;
   overflow: hidden;
 }
 
@@ -117,32 +107,17 @@ const toneLabel: Record<Review['tone'], string> = {
 
 .tone {
   font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-3);
 }
 
 .text {
-  font-size: 0.94rem;
-  line-height: 1.68;
-  color: var(--ink-2);
+  font-size: 0.96rem;
+  line-height: 1.78;
+  color: var(--ink);
   flex: 1;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tag {
-  font-size: 0.68rem;
-  font-weight: 500;
-  padding: 3px 9px;
-  border-radius: 999px;
-  color: var(--ink-3);
-  background: var(--bg-sunken);
 }
 
 .foot {

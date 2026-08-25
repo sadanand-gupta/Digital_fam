@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Store, Review } from '../types'
-import { CATEGORY_LABELS } from '../types'
+import { CATEGORY_LABELS, SENTIMENTS, SENTIMENT_LABELS, type Sentiment } from '../types'
 import ReviewCard from './ReviewCard.vue'
 import StoreBanner from './StoreBanner.vue'
 import StarRating from './StarRating.vue'
@@ -21,10 +21,10 @@ const { isUsed, resetMany } = useUsedReviews()
 /** Prefers the review composer, falls back to the listing. */
 const reviewTarget = computed(() => bestReviewTarget(props.store))
 
-/** How many reviews are visible at once; the rest wait in reserve. */
-const PAGE_SIZE = 6
+/** How many reviews to show for the selected option. */
+const PAGE_SIZE = 4
 
-const tag = ref<string>('all')
+const sentiment = ref<Sentiment | 'all'>('all')
 
 /** Reviews this visitor has not copied yet — the live pool. */
 const available = computed(() => props.store.reviews.filter(r => !isUsed(r.id)))
@@ -32,33 +32,19 @@ const available = computed(() => props.store.reviews.filter(r => !isUsed(r.id)))
 const usedCount = computed(() => props.store.reviews.length - available.value.length)
 const exhausted = computed(() => available.value.length === 0)
 
-/** How many topic chips to offer alongside "Any". */
-const MAX_TAGS = 5
-
 /**
- * The topics covering the most unused reviews, so every chip leads somewhere
- * useful. A long alphabetical list was mostly one-review dead ends.
+ * Only offer an option that still has something behind it, so a chip never
+ * leads to an empty list as reviews get used up.
  */
-const tags = computed(() => {
-  const counts = new Map<string, number>()
-  for (const r of available.value) {
-    for (const t of r.tags) counts.set(t, (counts.get(t) ?? 0) + 1)
-  }
-  const top = [...counts.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, MAX_TAGS)
-    .map(([t]) => t)
-
-  // A chip the user has selected must stay on screen even if it slips out of
-  // the top few as reviews are copied, or the filter becomes unclearable.
-  if (tag.value !== 'all' && !top.includes(tag.value)) top.push(tag.value)
-  return top
+const options = computed(() => {
+  const live = new Set(available.value.map(r => r.sentiment))
+  return SENTIMENTS.filter(v => live.has(v)).map(v => ({ value: v, label: SENTIMENT_LABELS[v] }))
 })
 
 /** Reviews matching the current filters, before the display window. */
 const matching = computed(() =>
   available.value.filter(r => {
-    if (tag.value !== 'all' && !r.tags.includes(tag.value)) return false
+    if (sentiment.value !== 'all' && r.sentiment !== sentiment.value) return false
     return true
   }),
 )
@@ -73,7 +59,7 @@ const filtered = computed(() => matching.value.slice(0, PAGE_SIZE))
 const queued = computed(() => Math.max(0, matching.value.length - filtered.value.length))
 
 function reset() {
-  tag.value = 'all'
+  sentiment.value = 'all'
 }
 
 /** Puts every review for this store back into circulation. */
@@ -157,17 +143,7 @@ function restoreAll() {
               <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" />
               </svg>
-              {{ reviewTarget.direct ? 'Write a review' : 'Open in Google Maps' }}
-            </a>
-
-            <a
-              v-if="reviewTarget.direct"
-              :href="store.mapsUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="secondary-link"
-            >
-              View listing &amp; directions
+              {{ reviewTarget.direct ? 'Write a review on Google Maps' : 'Open in Google Maps' }}
             </a>
           </aside>
         </div>
@@ -189,20 +165,25 @@ function restoreAll() {
         </header>
 
         <div class="filters">
-          <div class="row" role="group" aria-label="Filter by topic">
-            <span class="row-label">Topic</span>
-            <button class="filter" type="button" :class="{ on: tag === 'all' }" @click="tag = 'all'">
+          <div class="row" role="group" aria-label="Filter by how the visit went">
+            <span class="row-label">How was it?</span>
+            <button
+              class="filter"
+              type="button"
+              :class="{ on: sentiment === 'all' }"
+              @click="sentiment = 'all'"
+            >
               Any
             </button>
             <button
-              v-for="t in tags"
-              :key="t"
+              v-for="o in options"
+              :key="o.value"
               class="filter"
               type="button"
-              :class="{ on: tag === t }"
-              @click="tag = t"
+              :class="{ on: sentiment === o.value }"
+              @click="sentiment = o.value"
             >
-              {{ t }}
+              {{ o.label }}
             </button>
           </div>
         </div>
@@ -258,12 +239,12 @@ function restoreAll() {
         <div>
           <h2 class="display">Copied a review? One tap left.</h2>
           <p v-if="reviewTarget.direct">
-            This opens the review box for {{ store.name }} directly — just paste and post.
+            This opens the Google Maps review box for {{ store.name }} — just paste and post.
           </p>
           <p v-else>Open {{ store.name }} on Google Maps and paste it in.</p>
         </div>
         <a :href="reviewTarget.url" target="_blank" rel="noopener noreferrer" class="btn cta-btn">
-          {{ reviewTarget.direct ? 'Write the review' : 'Open in Google Maps' }}
+          {{ reviewTarget.direct ? 'Write the review on Google Maps' : 'Open in Google Maps' }}
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M7 17L17 7M8 7h9v9" />
           </svg>
@@ -294,7 +275,7 @@ function restoreAll() {
   width: 1000px;
   height: 620px;
   transform: translateX(-50%);
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--a) 26%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--a) 14%, transparent), transparent);
   filter: blur(24px);
   pointer-events: none;
 }
@@ -423,17 +404,6 @@ function restoreAll() {
   box-shadow: 0 8px 24px color-mix(in srgb, var(--a) 42%, transparent);
 }
 
-.secondary-link {
-  display: block;
-  margin-top: 11px;
-  text-align: center;
-  font-size: 0.79rem;
-  color: var(--ink-3);
-  transition: color 0.18s var(--ease);
-}
-
-.secondary-link:hover { color: var(--ink); }
-
 /* Reviews */
 .section { padding: 42px 0 56px; }
 
@@ -478,22 +448,24 @@ function restoreAll() {
 }
 
 .filter {
-  padding: 6px 13px;
+  padding: 8px 17px;
   border-radius: 999px;
-  font-size: 0.79rem;
-  font-weight: 500;
+  font-size: 0.81rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
-  background: var(--bg-elev);
-  border: 1px solid var(--line);
-  transition: all 0.18s var(--ease);
+  background: transparent;
+  border: 1px solid var(--line-2);
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
+              background 0.3s var(--ease);
 }
 
 .filter:hover { color: var(--ink); border-color: var(--line-2); }
 
 .filter.on {
-  color: #fff;
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--a), var(--b));
+  color: var(--ink-inv);
+  border-color: var(--a);
+  background: var(--a);
 }
 
 .status {
