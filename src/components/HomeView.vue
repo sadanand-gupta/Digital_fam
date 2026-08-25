@@ -203,16 +203,16 @@ const steps = [
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 22px;
+  gap: var(--sp-5);
 }
 
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--sp-2);
   padding: 7px 15px;
   border-radius: 999px;
-  font-size: 0.79rem;
+  font-size: var(--t-caption);
   font-weight: 500;
   color: var(--ink-2);
   background: var(--bg-elev);
@@ -250,8 +250,8 @@ const steps = [
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 11px;
-  margin-top: 4px;
+  gap: var(--sp-3);
+  margin-top: var(--sp-1);
 }
 
 .stats {
@@ -259,7 +259,7 @@ const steps = [
   flex-wrap: wrap;
   justify-content: center;
   gap: 14px 46px;
-  margin-top: 26px;
+  margin-top: var(--sp-5);
   padding-top: 26px;
   border-top: 1px solid var(--line);
   width: min(100%, 620px);
@@ -275,7 +275,7 @@ const steps = [
 }
 
 .stats dd {
-  font-size: 0.76rem;
+  font-size: var(--t-caption);
   color: var(--ink-3);
   margin-top: 2px;
 }
@@ -288,21 +288,21 @@ const steps = [
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 22px;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
 }
 
-.sec-head.center { justify-content: center; text-align: center; margin-bottom: 34px; }
+.sec-head.center { justify-content: center; text-align: center; margin-bottom: var(--sp-6); }
 
 .sec-title {
   font-size: clamp(1.6rem, 3.6vw, 2.2rem);
-  margin-top: 8px;
+  margin-top: var(--sp-2);
 }
 
 .search {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--sp-2);
   min-width: 260px;
   padding: 10px 16px;
   border-radius: 999px;
@@ -315,7 +315,7 @@ const steps = [
 
 .search:focus-within {
   border-color: color-mix(in srgb, var(--brand) 45%, transparent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 12%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 12%, transparent);
 }
 
 .search input {
@@ -324,7 +324,7 @@ const steps = [
   border: none;
   outline: none;
   background: none;
-  font-size: 0.88rem;
+  font-size: var(--t-meta);
   color: var(--ink);
 }
 
@@ -334,14 +334,14 @@ const steps = [
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 26px;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
 }
 
 .filter {
   padding: 7px 15px;
   border-radius: 999px;
-  font-size: 0.81rem;
+  font-size: var(--t-meta);
   font-weight: 500;
   color: var(--ink-2);
   background: var(--bg-elev);
@@ -355,13 +355,13 @@ const steps = [
   color: var(--on-fill);
   border-color: transparent;
   background: var(--brand);
-  box-shadow: 0 3px 12px color-mix(in srgb, var(--brand) 30%, transparent);
+  box-shadow: var(--shadow-sm);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(272px, 100%), 1fr));
-  gap: 20px;
+  gap: var(--sp-5);
 }
 
 .empty {
@@ -379,7 +379,7 @@ const steps = [
 .steps {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
-  gap: 20px;
+  gap: var(--sp-5);
   list-style: none;
   padding: 0;
 }
@@ -387,7 +387,7 @@ const steps = [
 .step {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: var(--sp-2);
   padding: 26px 24px;
   background: var(--bg-elev);
   border: 1px solid var(--line);
@@ -406,18 +406,18 @@ const steps = [
   color: transparent;
 }
 
-.step h3 { font-size: 1.02rem; font-weight: 600; }
+.step h3 { font-size: var(--t-h3); font-weight: 600; }
 
 .step p {
-  font-size: 0.87rem;
+  font-size: var(--t-meta);
   color: var(--ink-2);
   line-height: 1.6;
 }
 
 .note {
-  margin-top: 26px;
+  margin-top: var(--sp-5);
   text-align: center;
-  font-size: 0.85rem;
+  font-size: var(--t-meta);
   color: var(--ink-3);
   max-width: 62ch;
   margin-inline: auto;
@@ -432,7 +432,7 @@ const steps = [
   .search { min-width: 0; width: 100%; }
 
   /* Comfortable touch targets for the category chips. */
-  .filter { padding: 9px 15px; font-size: 0.83rem; }
+  .filter { padding: 9px 15px; font-size: var(--t-meta); }
 
   .stats { gap: 14px 28px; }
   .cta .btn { flex: 1 1 auto; justify-content: center; }

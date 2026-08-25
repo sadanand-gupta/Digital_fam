@@ -33,7 +33,7 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--sp-4);
   max-width: calc(100vw - 32px);
   padding: 13px 16px;
   border-radius: 16px;
@@ -60,17 +60,17 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
   line-height: 1.35;
 }
 
-.body strong { font-size: 0.87rem; font-weight: 600; }
-.body span { font-size: 0.78rem; color: var(--ink-3); }
+.body strong { font-size: var(--t-meta); font-weight: 600; }
+.body span { font-size: var(--t-caption); color: var(--ink-3); }
 
 .go {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--sp-2);
   flex-shrink: 0;
   padding: 8px 14px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: var(--t-caption);
   font-weight: 600;
   color: var(--on-fill);
   background: var(--brand);
@@ -89,7 +89,7 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
 }
 
 @media (max-width: 560px) {
-  .toast { bottom: 16px; gap: 10px; padding: 11px 13px; }
+  .toast { bottom: 16px; gap: var(--sp-3); padding: 11px 13px; }
   .body span { display: none; }
 }
 </style>

@@ -26,15 +26,15 @@ const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
       animationDelay: `${Math.min(index, 9) * 45}ms`,
     }"
   >
-    <div class="head">
-      <StarRating :rating="review.rating" />
-      <span class="tone">{{ SENTIMENT_LABELS[review.sentiment] }}</span>
-    </div>
+    <p class="tone">{{ SENTIMENT_LABELS[review.sentiment] }}</p>
 
     <p class="text">{{ review.text }}</p>
 
     <footer class="foot">
-      <span class="meta">{{ wordCount }} words</span>
+      <span class="meta">
+        <StarRating :rating="review.rating" :size="12" />
+        <span class="words">{{ wordCount }} words</span>
+      </span>
       <button
         class="copy"
         :class="{ done: copied }"
@@ -60,8 +60,8 @@ const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 26px 24px;
+  gap: var(--sp-4);
+  padding: var(--sp-6) var(--sp-5) var(--sp-5);
   background: var(--bg-elev);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -82,7 +82,7 @@ const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
 }
 
 .review:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow);
   border-color: var(--line-2);
 }
@@ -98,24 +98,18 @@ const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
   background: var(--ok);
 }
 
-.head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
+/* Editorial category label — the card's opening line. */
 .tone {
-  font-size: 0.68rem;
+  font-size: var(--t-eyebrow);
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--ink-3);
+  color: var(--gold-ink);
 }
 
 .text {
-  font-size: 0.96rem;
-  line-height: 1.78;
+  font-size: var(--t-body);
+  line-height: 1.8;
   color: var(--ink);
   flex: 1;
 }
@@ -124,36 +118,48 @@ const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding-top: 14px;
+  gap: var(--sp-3);
+  margin-top: auto;
+  padding-top: var(--sp-4);
   border-top: 1px solid var(--line);
 }
 
 .meta {
-  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--t-caption);
   color: var(--ink-3);
 }
+
+.words { letter-spacing: 0.01em; }
 
 .copy {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 15px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--t-meta);
+  font-weight: 500;
   color: var(--on-fill);
-  background: var(--a);
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--a) 30%, transparent);
-  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), background 0.25s var(--ease);
+  background: var(--brand);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease),
+              background 0.25s var(--ease);
 }
 
-.copy:hover { transform: translateY(-1px); box-shadow: 0 6px 18px color-mix(in srgb, var(--a) 40%, transparent); }
-.copy:active { transform: scale(0.95); }
+.copy:hover {
+  transform: translateY(-1px);
+  background: var(--brand-2);
+  box-shadow: var(--shadow);
+}
+
+.copy:active { transform: translateY(0); }
 
 .copy.done {
   background: var(--ok);
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--ok) 35%, transparent);
+  box-shadow: var(--shadow-sm);
 }
 
 .tick { animation: pop 0.32s var(--ease) both; }

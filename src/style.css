@@ -1,14 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/*
+ * Playfair Display — high-contrast editorial serif, the face luxury magazines
+ * built their mastheads on. Carries business names and section headings.
+ * Instrument Sans — a quiet modern grotesque for everything the user operates,
+ * so it never competes with the serif above it.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Instrument+Sans:wght@400;500;600&display=swap');
 @import './theme.css';
 
 :root {
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  /* Restrained radii: tags stay tight, major cards get 16–18px, nothing more. */
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 18px;
 
-  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
 
   /* Slow, settled easing — nothing should snap. */
   --ease: cubic-bezier(0.32, 0.72, 0.28, 1);
@@ -60,24 +67,46 @@ a { color: inherit; text-decoration: none; }
   .container { padding-inline: 18px; }
 }
 
-/* ---------- Typography ---------- */
+/* ---------- Typography ----------
+ * Serif carries names and section headings; sans carries everything the user
+ * operates. Hierarchy comes from size, weight and colour together — weight
+ * alone flattens into "everything is bold".
+ */
 .display {
   font-family: var(--font-display);
   font-weight: 600;
-  line-height: 1.06;
-  /* Garamond is a narrow face — it wants air, not tightening. */
-  letter-spacing: 0;
+  line-height: 1.08;
+  /* Playfair is wide and high-contrast — at display sizes it wants tightening. */
+  letter-spacing: -0.015em;
 }
 
-body { font-weight: 400; letter-spacing: 0.005em; }
+body {
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  font-size: var(--t-body);
+}
+
+/* Editorial lead paragraph — one step up, and never bold. */
+.lede {
+  font-size: var(--t-lead);
+  font-weight: 400;
+  line-height: 1.72;
+  color: var(--ink-2);
+}
+
+.meta {
+  font-size: var(--t-meta);
+  color: var(--ink-3);
+  letter-spacing: 0.01em;
+}
 
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.68rem;
+  gap: var(--sp-3);
+  font-size: var(--t-eyebrow);
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--gold-ink);
 }
@@ -85,10 +114,10 @@ body { font-weight: 400; letter-spacing: 0.005em; }
 /* Short gold rule beside the eyebrow — the one flourish in the whole system. */
 .eyebrow::after {
   content: '';
-  width: 26px;
+  width: 28px;
   height: 1px;
   background: var(--gold);
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 /* ---------- Buttons ---------- */
@@ -108,29 +137,42 @@ body { font-weight: 400; letter-spacing: 0.005em; }
   white-space: nowrap;
 }
 
-.btn:active { transform: scale(0.985); }
+.btn:active { transform: translateY(0); }
+
+.btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
 
 .btn-primary {
   background: var(--brand);
-  color: var(--ink-inv);
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--brand) 22%, transparent);
+  color: var(--on-fill);
+  box-shadow: var(--shadow-sm);
 }
 
+/* A 1px lift and a slightly deeper ground — enough to feel alive, not bouncy. */
 .btn-primary:hover {
   transform: translateY(-1px);
   background: var(--brand-2);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--brand) 28%, transparent);
+  box-shadow: var(--shadow);
 }
 
 .btn-ghost {
   border-color: var(--line-2);
-  background: var(--bg-elev);
+  background: transparent;
   color: var(--ink);
 }
 
-.btn-ghost:hover { border-color: var(--ink-3); transform: translateY(-1px); }
+.btn-ghost:hover {
+  border-color: var(--ink-2);
+  background: var(--bg-elev);
+  transform: translateY(-1px);
+}
 
-.btn-sm { padding: 8px 14px; font-size: 0.82rem; }
+.btn-sm { padding: 9px 16px; font-size: var(--t-meta); }
+
+/* Squared variant for buttons that sit inside cards rather than float. */
+.btn-square { border-radius: var(--radius-sm); }
 
 /* ---------- Cards ---------- */
 .card {

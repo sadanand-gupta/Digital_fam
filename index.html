@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#03153d" />
+    <meta name="theme-color" content="#f8f4ea" />
     <meta
       name="description"
       content="Enjoyed your meal at Chickato Crispy Fried Chicken MMDA, Arumbakkam? Pick a review, copy it in a tap, and post it on Google Maps in seconds."
@@ -12,6 +12,18 @@
     <title>Chickato Crispy Fried Chicken MMDA — Leave a review</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script>
+      // Resolve the theme before first paint, so a returning dark-mode visitor
+      // never sees a frame of ivory. Mirrors SiteHeader's logic.
+      (function () {
+        var saved = null
+        try { saved = localStorage.getItem('df-theme') } catch (e) { /* private mode */ }
+        var dark = saved
+          ? saved === 'dark'
+          : window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

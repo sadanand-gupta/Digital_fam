@@ -1,143 +1,143 @@
 /*
- * THEME — every colour in the app lives here.
+ * THEME — every colour, space and type step in the app lives here.
  * ---------------------------------------------------------------------------
- * To restyle the whole site, change the RAW PALETTE below. Nothing else in the
- * codebase hardcodes a colour, so no component needs touching.
+ * To restyle the site, change the RAW PALETTE below. No component hardcodes a
+ * colour, so nothing else needs touching.
  *
- * Current scheme: Blue Velvet navy + cream + gold.
+ * Scheme: warm ivory ground, deep navy brand, muted gold accent.
+ * Navy is the dominant brand and action colour; gold stays deliberately
+ * sparing — used everywhere it stops reading as gold and starts reading as
+ * beige.
  *
- * Navy carries structure, cream is the ground, gold accents. Everything else
- * here is derived: neutrals are tinted toward the navy, and the deeper gold
- * tones are the same hue darkened until small text passes contrast.
- *
- * Two rules worth keeping when you swap colours:
- *   1. Text needs 4.5:1 contrast against whatever sits behind it. Gold is the
- *      awkward one: bright golds fail on cream, dark golds go muddy on navy —
- *      hence the separate light/dark values. Check any new pair at
- *      https://webaim.org/resources/contrastchecker/
- *   2. Keep the roles distinct: navy structures, gold accents, cream recedes.
- *      Gold used everywhere stops reading as gold and starts reading as beige.
+ * One rule worth keeping: text needs 4.5:1 contrast against what sits behind
+ * it. The display gold and muted grey below are correct for decorative use but
+ * too light for small text on ivory, so each has a darker -ink counterpart.
+ * Check any new pair at https://webaim.org/resources/contrastchecker/
  */
 
 :root {
   /* ---------- RAW PALETTE — edit these to restyle the site ---------- */
 
-  /* Blue Velvet — structure: buttons, header, logo marks, filled surfaces. */
-  --c-primary: #03153d;
-  --c-primary-deep: #020f2c;
-  /* Lifted variant for dark mode, where the deep tone would vanish on itself. */
-  --c-primary-light: #8fa8d4;
+  /* Navy — brand, primary actions, headings. */
+  --c-navy: #071a41;
+  --c-navy-soft: #23385e;
 
-  /*
-   * Deep antique gold — accent: stars, rules, eyebrows, highlights.
-   * Light and dark mode need different depths: a gold dark enough to read as
-   * text on cream turns muddy on navy, so the dark theme lifts it slightly
-   * while staying well short of a bright champagne tone.
-   */
-  --c-accent: #7d631f;
-  /* Small text on cream. Same value — this gold is already dark enough. */
-  --c-accent-ink: #7d631f;
-  /* Filled accent surface carrying white text (5.71:1). */
-  --c-accent-surface: #7d631f;
-  /* Dark mode gold: deep, but lifted enough to read on navy (6.12:1). */
-  --c-accent-light: #b8923a;
+  /* Gold — accent. Sparing by design. */
+  --c-gold: #a58a4a;
+  /* Darkened for small text (the display tone reads 3.0:1 on ivory). */
+  --c-gold-ink: #786430;
 
-  /* Confirmation and "live" markers — gold, so the palette stays disciplined. */
-  --c-support: #7d631f;
-  --c-support-deep: #03153d;
-  --c-support-light: #b8923a;
-
-  /* Neutrals — light mode: cream ground, navy-tinted ink. */
-  --c-bg: #faf6ed;
+  /* Warm neutrals. */
+  --c-bg: #f8f4ea;
   --c-surface: #fffdf8;
-  --c-sunken: #f2ebdb;
-  --c-text: #0e1f3f;
-  --c-text-2: #3d4c68;
-  /* Dark enough to clear 4.5:1 on the sunken cream as well as the page. */
-  --c-text-3: #5a6580;
+  --c-sunken: #f2ecdd;
+  --c-border: #e5ded0;
+  --c-muted: #718096;
+  /* Darkened for small text (the display tone reads 3.7:1 on ivory). */
+  --c-muted-ink: #59677a;
 
-  /* Neutrals — dark mode: navy ground, cream ink. */
-  --c-bg-dark: #03153d;
-  --c-surface-dark: #0a1f4d;
-  --c-sunken-dark: #020f2c;
-  --c-text-dark: #f5eee0;
-  --c-text-2-dark: #cbc0ab;
-  --c-text-3-dark: #9a927f;
+  /* Dark theme. */
+  --c-bg-dark: #081326;
+  --c-surface-dark: #0d1b32;
+  --c-card-dark: #11223d;
+  --c-text-dark: #f6f1e7;
+  --c-muted-dark: #aab4c5;
+  --c-gold-dark: #c5a866;
+  --c-border-dark: rgba(246, 241, 231, 0.12);
 
-  /* Shadow tint, as raw RGB channels (Blue Velvet). */
-  --c-shadow-rgb: 3, 21, 61;
+  /* Shadow tint, as raw channels. */
+  --c-shadow-rgb: 7, 26, 65;
+
+  /* ---------- SPACING — one scale, used everywhere ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 128px;
+
+  /* ---------- TYPE SCALE ---------- */
+  --t-eyebrow: 0.7rem;
+  --t-caption: 0.78rem;
+  --t-meta: 0.83rem;
+  --t-body: 0.95rem;
+  --t-lead: 1.06rem;
+  --t-h3: 1.15rem;
+  --t-h2: clamp(1.5rem, 3vw, 2.05rem);
+  --t-h1: clamp(2rem, 5vw, 3.1rem);
 
   /* ---------- SEMANTIC TOKENS — components use only these ---------- */
   --bg: var(--c-bg);
   --bg-elev: var(--c-surface);
   --bg-sunken: var(--c-sunken);
-  --surface-glass: rgba(255, 253, 248, 0.82);
+  --surface-glass: rgba(255, 253, 248, 0.86);
 
-  --ink: var(--c-text);
-  --ink-2: var(--c-text-2);
-  --ink-3: var(--c-text-3);
+  --ink: var(--c-navy);
+  --ink-2: var(--c-navy-soft);
+  --ink-3: var(--c-muted-ink);
   --ink-inv: #ffffff;
 
-  --line: rgba(3, 21, 61, 0.1);
-  --line-2: rgba(3, 21, 61, 0.18);
+  --line: var(--c-border);
+  --line-2: #d8cfbc;
 
-  --brand: var(--c-primary);
-  --brand-2: var(--c-primary-deep);
+  --brand: var(--c-navy);
+  --brand-2: var(--c-navy-soft);
 
-  /* 'gold' is historical naming — it is the accent slot, whatever the hue. */
-  --gold: var(--c-accent);
-  --gold-2: var(--c-accent-light);
-  --gold-ink: var(--c-accent-ink);
-  --accent-surface: var(--c-accent-surface);
+  /* 'gold' is the accent slot. -ink is its readable counterpart. */
+  --gold: var(--c-gold);
+  --gold-2: var(--c-gold-ink);
+  --gold-ink: var(--c-gold-ink);
+  --accent-surface: var(--c-gold-ink);
 
-  --ok: var(--c-support);
-  /* Deep filled surfaces — the CTA band and active filter chips. */
-  --fill-deep: var(--c-support-deep);
+  --ok: var(--c-gold-ink);
+  /* Deep filled surfaces — the closing CTA band and active filter chips. */
+  --fill-deep: var(--c-navy);
 
-  /* Text that sits on a filled brand/accent surface. */
   --on-fill: #ffffff;
-  /* Error state — kept separate from the accent so it always reads as alarm. */
-  --danger: #c62828;
-  /* Veil over banner imagery, as raw channels so alpha can vary. */
-  --scrim-rgb: 3, 21, 61;
+  --danger: #b02a2a;
+  --scrim-rgb: 7, 26, 65;
 
-  --shadow-sm: 0 1px 2px rgba(var(--c-shadow-rgb), 0.06), 0 1px 3px rgba(var(--c-shadow-rgb), 0.04);
-  --shadow: 0 2px 8px rgba(var(--c-shadow-rgb), 0.07), 0 8px 28px rgba(var(--c-shadow-rgb), 0.08);
-  --shadow-lg: 0 6px 20px rgba(var(--c-shadow-rgb), 0.1), 0 20px 56px rgba(var(--c-shadow-rgb), 0.12);
+  /* Restrained shadows — depth comes from spacing, not drop shadows. */
+  --shadow-sm: 0 1px 2px rgba(var(--c-shadow-rgb), 0.04);
+  --shadow: 0 1px 2px rgba(var(--c-shadow-rgb), 0.04), 0 4px 16px rgba(var(--c-shadow-rgb), 0.05);
+  --shadow-lg: 0 2px 4px rgba(var(--c-shadow-rgb), 0.05), 0 12px 36px rgba(var(--c-shadow-rgb), 0.07);
 }
 
-:root[data-theme='dark'],
-html.dark {
+:root[data-theme='dark'] {
   --bg: var(--c-bg-dark);
-  --bg-elev: var(--c-surface-dark);
-  --bg-sunken: var(--c-sunken-dark);
-  --surface-glass: rgba(10, 31, 77, 0.8);
+  --bg-elev: var(--c-card-dark);
+  --bg-sunken: var(--c-surface-dark);
+  --surface-glass: rgba(13, 27, 50, 0.86);
 
   --ink: var(--c-text-dark);
-  --ink-2: var(--c-text-2-dark);
-  --ink-3: var(--c-text-3-dark);
+  --ink-2: var(--c-muted-dark);
+  --ink-3: #8c97a8;
   --ink-inv: var(--c-bg-dark);
 
-  --line: rgba(245, 238, 224, 0.13);
-  --line-2: rgba(245, 238, 224, 0.22);
+  --line: var(--c-border-dark);
+  --line-2: rgba(246, 241, 231, 0.2);
 
-  /* On a navy ground the brand must lift to stay visible — gold does that. */
-  --brand: var(--c-accent-light);
-  --brand-2: #cba851;
+  /* Navy is invisible on navy, so gold carries actions here. */
+  --brand: var(--c-gold-dark);
+  --brand-2: #d4bb84;
 
-  --gold: var(--c-accent-light);
-  --gold-2: #cba851;
-  --gold-ink: var(--c-accent-light);
-  --accent-surface: var(--c-accent-light);
+  --gold: var(--c-gold-dark);
+  --gold-2: #d4bb84;
+  --gold-ink: var(--c-gold-dark);
+  --accent-surface: var(--c-gold-dark);
 
-  --ok: var(--c-accent-light);
-  --fill-deep: var(--c-surface-dark);
+  --ok: var(--c-gold-dark);
+  --fill-deep: var(--c-card-dark);
 
-  /* Filled surfaces in dark mode are gold, so their text is navy. */
-  --on-fill: var(--c-primary);
+  /* Filled surfaces are gold here, so their text is the dark ground. */
+  --on-fill: var(--c-bg-dark);
   --danger: #ff8a80;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 8px 28px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.55), 0 20px 56px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.45), 0 12px 36px rgba(0, 0, 0, 0.4);
 }

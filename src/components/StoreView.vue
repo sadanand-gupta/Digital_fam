@@ -76,7 +76,6 @@ function restoreAll() {
 
     <!-- Store hero -->
     <section class="hero has-banner">
-      <div class="wash" aria-hidden="true" />
       <div class="container">
         <button v-if="!single" class="back" type="button" @click="emit('back')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -87,17 +86,14 @@ function restoreAll() {
 
         <div class="hero-grid">
           <div class="identity">
-            <span class="mark" aria-hidden="true">{{ store.logoMark }}</span>
-            <div>
-              <p class="eyebrow">{{ CATEGORY_LABELS[store.category] }}</p>
-              <h1 class="display name">{{ store.name }}</h1>
-              <p class="tagline">{{ store.tagline }}</p>
+            <p class="eyebrow">{{ CATEGORY_LABELS[store.category] }}</p>
+            <h1 class="display name">{{ store.name }}</h1>
+            <p class="tagline">{{ store.tagline }}</p>
 
-              <div class="rating">
-                <StarRating :rating="store.rating" :size="15" />
-                <strong>{{ store.rating.toFixed(1) }}</strong>
-                <span>· {{ store.reviewCount.toLocaleString() }} Google reviews</span>
-              </div>
+            <div class="rating">
+              <strong class="score">{{ store.rating.toFixed(1) }}</strong>
+              <StarRating :rating="store.rating" :size="15" />
+              <span class="count">{{ store.reviewCount.toLocaleString() }} Google reviews</span>
             </div>
           </div>
 
@@ -252,43 +248,33 @@ function restoreAll() {
 /* Hero */
 .hero {
   position: relative;
-  padding: 26px 0 44px;
-  overflow: hidden;
+  padding: 0 0 var(--sp-8);
 }
 
-/* The banner already supplies the top visual, so pull the hero up over it. */
+/*
+ * Pulled up over the banner's fade so the identity emerges from the image
+ * rather than starting below a hard edge.
+ */
 .hero.has-banner {
-  margin-top: clamp(-70px, -7vw, -40px);
-  padding-top: 0;
-}
-
-.wash {
-  position: absolute;
-  top: -320px;
-  left: 50%;
-  width: 1000px;
-  height: 620px;
-  transform: translateX(-50%);
-  background: var(--bg-sunken);
-  opacity: 0.45;
-  filter: blur(24px);
-  pointer-events: none;
+  margin-top: clamp(-96px, -9vw, -56px);
 }
 
 .back {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  margin-bottom: 26px;
-  padding: 8px 15px;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+  padding: var(--sp-2) var(--sp-4);
   border-radius: 999px;
-  font-size: 0.83rem;
+  font-size: var(--t-meta);
   font-weight: 500;
   color: var(--ink-2);
-  background: var(--bg-elev);
+  background: var(--surface-glass);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--line);
-  transition: all 0.2s var(--ease);
+  transition: color 0.22s var(--ease), border-color 0.22s var(--ease),
+              transform 0.22s var(--ease);
 }
 
 .back:hover { color: var(--ink); border-color: var(--line-2); transform: translateX(-2px); }
@@ -296,83 +282,96 @@ function restoreAll() {
 .hero-grid {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
-  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) minmax(290px, 350px);
+  gap: var(--sp-7);
   align-items: start;
 }
 
 .identity {
   display: flex;
-  gap: 18px;
-  animation: rise 0.55s var(--ease) both;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  animation: settle 0.7s var(--ease) both;
 }
 
-.mark {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 62px;
-  height: 62px;
-  border-radius: 18px;
-  font-family: var(--font-display);
-  font-size: 1.7rem;
-  font-weight: 700;
-  color: var(--on-fill);
-  background: var(--a);
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--a) 38%, transparent);
-}
-
+/* The dominant element on the page — everything else defers to it. */
 .name {
-  font-size: clamp(1.7rem, 4.2vw, 2.6rem);
-  margin: 6px 0 8px;
+  font-size: var(--t-h1);
+  max-width: 18ch;
 }
 
 .tagline {
-  font-size: 1rem;
+  font-size: var(--t-lead);
+  font-weight: 400;
+  line-height: 1.65;
   color: var(--ink-2);
-  max-width: 46ch;
+  max-width: 44ch;
 }
 
 .rating {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-  font-size: 0.86rem;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--line);
+  width: 100%;
+  max-width: 320px;
+}
+
+.score {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.count {
+  font-size: var(--t-meta);
+  color: var(--ink-3);
 }
 
 .rating strong { font-weight: 700; }
 .rating span { color: var(--ink-3); }
 
 .info {
-  padding: 22px;
-  animation: rise 0.55s var(--ease) both;
-  animation-delay: 100ms;
+  padding: var(--sp-5);
+  animation: settle 0.7s var(--ease) both;
+  animation-delay: 120ms;
 }
 
+/* Rules between rows rather than around them — lighter than boxed sections. */
 .info dl {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+}
+
+.info dl > div + div {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--line);
 }
 
 .info dt {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  gap: var(--sp-2);
+  font-size: var(--t-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-3);
-  margin-bottom: 3px;
+  margin-bottom: var(--sp-2);
 }
 
+.info dt svg { color: var(--gold); }
+
 .info dd {
-  font-size: 0.87rem;
-  color: var(--ink-2);
-  line-height: 1.5;
+  font-size: var(--t-meta);
+  color: var(--ink);
+  line-height: 1.62;
 }
 
 .info dd a { color: var(--ink-2); border-bottom: 1px solid var(--line-2); }
@@ -382,70 +381,73 @@ function restoreAll() {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  margin-top: 20px;
-  padding: 12px 18px;
-  border-radius: 999px;
-  font-size: 0.87rem;
-  font-weight: 600;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--t-meta);
+  font-weight: 500;
   color: var(--on-fill);
-  background: var(--a);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--a) 32%, transparent);
-  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  background: var(--brand);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.24s var(--ease), box-shadow 0.24s var(--ease),
+              background 0.24s var(--ease);
 }
 
 .maps:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--a) 42%, transparent);
+  transform: translateY(-1px);
+  background: var(--brand-2);
+  box-shadow: var(--shadow);
 }
 
 /* Reviews */
-.section { padding: 42px 0 56px; }
+/* Generous, even rhythm — the whitespace is doing the design work here. */
+.section { padding: var(--sp-8) 0 var(--sp-9); }
 
-.sec-head { margin-bottom: 22px; }
+.sec-head { margin-bottom: var(--sp-6); }
 
 .sec-title {
-  font-size: clamp(1.45rem, 3.2vw, 1.95rem);
-  margin: 8px 0 10px;
+  font-size: var(--t-h2);
+  margin: var(--sp-3) 0 var(--sp-3);
+  max-width: 20ch;
 }
 
 .sub {
   color: var(--ink-2);
-  font-size: 0.93rem;
-  max-width: 58ch;
+  font-size: var(--t-body);
+  line-height: 1.7;
+  max-width: 54ch;
 }
 
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 18px;
-  margin-bottom: 18px;
-  border-radius: var(--radius);
-  background: var(--bg-sunken);
-  border: 1px solid var(--line);
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-5);
+  margin-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--line);
 }
 
 .row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 7px;
+  gap: var(--sp-2);
 }
 
 .row-label {
-  min-width: 48px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  margin-right: var(--sp-2);
+  font-size: var(--t-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-3);
 }
 
 .filter {
-  padding: 8px 17px;
+  padding: var(--sp-2) var(--sp-4);
   border-radius: 999px;
-  font-size: 0.81rem;
+  font-size: var(--t-meta);
   font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--ink-2);
@@ -469,24 +471,24 @@ function restoreAll() {
   align-items: center;
   justify-content: space-between;
   gap: 8px 16px;
-  margin-bottom: 18px;
+  margin-bottom: var(--sp-4);
 }
 
 .count {
-  font-size: 0.79rem;
+  font-size: var(--t-caption);
   color: var(--ink-3);
 }
 
 .used-note {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-size: 0.79rem;
+  gap: var(--sp-2);
+  font-size: var(--t-caption);
   color: var(--ink-3);
 }
 
 .restore {
-  font-size: 0.78rem;
+  font-size: var(--t-caption);
   font-weight: 600;
   color: var(--ink-2);
   border-bottom: 1px solid var(--line-2);
@@ -500,7 +502,7 @@ function restoreAll() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
   padding: 60px 28px;
   text-align: center;
   border-radius: var(--radius-lg);
@@ -518,7 +520,7 @@ function restoreAll() {
   border-radius: 50%;
   color: var(--on-fill);
   background: var(--a);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--a) 34%, transparent);
+  box-shadow: var(--shadow-sm);
 }
 
 .done h3 {
@@ -534,7 +536,7 @@ function restoreAll() {
   line-height: 1.6;
 }
 
-.done .btn { margin-top: 6px; }
+.done .btn { margin-top: var(--sp-2); }
 
 /* Copied card leaves, the replacement slides up into its slot */
 .swap-leave-active {
@@ -561,32 +563,31 @@ function restoreAll() {
   position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-  gap: 18px;
+  gap: var(--sp-4);
 }
 
 .empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: var(--sp-4);
   padding: 56px 0;
   color: var(--ink-3);
 }
 
 /* CTA band */
-.cta-band { padding: 52px 0; }
+.cta-band { padding: 0 0 var(--sp-9); }
 
 .cta-band .inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 22px;
-  padding: 34px;
+  gap: var(--sp-5);
+  padding: var(--sp-7) var(--sp-6);
   border-radius: var(--radius-xl);
   color: var(--on-fill);
   background: var(--fill-deep);
-  box-shadow: var(--shadow-lg);
 }
 
 .cta-band h2 {
@@ -594,33 +595,63 @@ function restoreAll() {
 }
 
 .cta-band p {
-  margin-top: 7px;
-  font-size: 0.92rem;
+  margin-top: var(--sp-2);
+  font-size: var(--t-body);
   opacity: 0.9;
 }
 
 .cta-btn {
   background: var(--on-fill);
   color: var(--ink);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow);
 }
 
 .cta-btn:hover { transform: translateY(-2px); }
 
 @media (max-width: 860px) {
-  .hero-grid { grid-template-columns: 1fr; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+
+  /* Identity leads; the details card follows rather than sitting alongside. */
+  .info { order: 2; }
 }
 
 @media (max-width: 560px) {
-  .identity { flex-direction: column; gap: 14px; }
-  .cta-band .inner { padding: 26px; }
+  /* Less negative pull so the name clears the banner on a short screen. */
+  .hero.has-banner { margin-top: -44px; }
+  .hero { padding-bottom: var(--sp-6); }
 
-  /* Comfortable touch targets — chips are small to hit with a thumb. */
-  .filter { padding: 9px 15px; font-size: 0.82rem; }
-  .row-label { min-width: 100%; }
-  .filters { padding: 14px; }
-  .status { gap: 6px; }
-  .maps { padding: 14px 18px; }
-  .done { padding: 44px 20px; }
+  .name { max-width: 100%; }
+  .tagline { font-size: var(--t-body); }
+
+  .rating {
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+  }
+
+  .section { padding: var(--sp-7) 0 var(--sp-8); }
+  .sec-title { max-width: 100%; }
+
+  /* The label owns its own line so chips get the full width to wrap into. */
+  .row-label { width: 100%; margin-bottom: var(--sp-1); }
+
+  /* Thumb-friendly targets — 44px min height for anything tappable. */
+  .filter { padding: var(--sp-3) var(--sp-4); }
+  .maps { padding: var(--sp-4); }
+
+  .cta-band .inner {
+    padding: var(--sp-6) var(--sp-5);
+    /* Stack so the CTA is full-width and reachable, not squeezed beside text. */
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .cta-btn { justify-content: center; }
+  .done { padding: var(--sp-7) var(--sp-5); }
 }
+
 </style>

@@ -179,7 +179,7 @@ const year = new Date().getFullYear()
   max-width: min(92vw, 460px);
   padding: 12px 20px;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: var(--t-meta);
   font-weight: 500;
   text-align: center;
   color: var(--ink);
@@ -193,7 +193,7 @@ const year = new Date().getFullYear()
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--sp-4);
   padding: 110px 0;
   text-align: center;
 }
@@ -217,14 +217,14 @@ const year = new Date().getFullYear()
 
 .mark {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: var(--t-lead);
   font-weight: 700;
 }
 
 .mark em { font-style: normal; font-weight: 500; color: var(--ink-3); }
 
 .fine {
-  font-size: 0.78rem;
+  font-size: var(--t-caption);
   color: var(--ink-3);
   max-width: 52ch;
 }

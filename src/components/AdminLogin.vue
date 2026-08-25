@@ -113,7 +113,7 @@ function fail(message: string) {
 .card {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: var(--sp-4);
   width: min(100%, 420px);
   padding: 34px 30px 28px;
   background: var(--bg-elev);
@@ -137,26 +137,26 @@ function fail(message: string) {
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 13px;
+  border-radius: var(--radius);
   color: var(--on-fill);
   background: var(--brand);
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--brand) 35%, transparent);
+  box-shadow: var(--shadow-sm);
 }
 
-.head { display: flex; flex-direction: column; gap: 6px; }
+.head { display: flex; flex-direction: column; gap: var(--sp-2); }
 
 .title { font-size: 1.5rem; }
 
 .sub {
-  font-size: 0.86rem;
+  font-size: var(--t-meta);
   color: var(--ink-2);
   line-height: 1.55;
 }
 
-.field { display: flex; flex-direction: column; gap: 6px; }
+.field { display: flex; flex-direction: column; gap: var(--sp-2); }
 
 .lbl {
-  font-size: 0.76rem;
+  font-size: var(--t-caption);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -167,7 +167,7 @@ function fail(message: string) {
   width: 100%;
   padding: 11px 14px;
   border-radius: var(--radius-sm);
-  font-size: 0.92rem;
+  font-size: var(--t-body);
   font-family: inherit;
   color: var(--ink);
   background: var(--bg);
@@ -180,7 +180,7 @@ function fail(message: string) {
 
 .field input:focus {
   border-color: color-mix(in srgb, var(--brand) 45%, transparent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 12%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 12%, transparent);
 }
 
 .pw { position: relative; display: block; }
@@ -205,19 +205,19 @@ function fail(message: string) {
 .peek:hover { color: var(--ink); background: var(--bg-sunken); }
 
 .err {
-  font-size: 0.83rem;
+  font-size: var(--t-meta);
   color: var(--danger);
   line-height: 1.5;
 }
 
 
 
-.full { width: 100%; justify-content: center; margin-top: 4px; }
+.full { width: 100%; justify-content: center; margin-top: var(--sp-1); }
 
 .back {
   align-self: center;
   padding: 6px 10px;
-  font-size: 0.83rem;
+  font-size: var(--t-meta);
   color: var(--ink-3);
   transition: color 0.2s var(--ease);
 }

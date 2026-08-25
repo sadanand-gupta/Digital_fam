@@ -69,8 +69,8 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 24px;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
   text-align: left;
   background: var(--bg-elev);
   border: 1px solid var(--line);
@@ -141,8 +141,8 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 4px;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-1);
 }
 
 .mark {
@@ -150,26 +150,26 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 13px;
+  border-radius: var(--radius);
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--on-fill);
   background: var(--a);
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--a) 35%, transparent);
+  box-shadow: var(--shadow-sm);
 }
 
 .meta {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: var(--sp-2);
 }
 
 .live-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--sp-2);
   padding: 3px 9px;
   border-radius: 999px;
   font-size: 0.67rem;
@@ -190,7 +190,7 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
 }
 
 .cat {
-  font-size: 0.68rem;
+  font-size: var(--t-eyebrow);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -206,7 +206,7 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
 }
 
 .tagline {
-  font-size: 0.87rem;
+  font-size: var(--t-meta);
   color: var(--ink-2);
   line-height: 1.55;
   flex: 1;
@@ -215,8 +215,8 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
 .rating {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.8rem;
+  gap: var(--sp-2);
+  font-size: var(--t-caption);
 }
 
 .score { font-weight: 700; }
@@ -226,14 +226,14 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
 
 .ready {
-  font-size: 0.79rem;
+  font-size: var(--t-caption);
   font-weight: 500;
   color: var(--ink-2);
 }
@@ -258,11 +258,11 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
 .setlive {
   position: relative;
   z-index: 1;
-  margin-top: 10px;
+  margin-top: var(--sp-3);
   padding: 9px 14px;
   width: 100%;
   border-radius: var(--radius-sm);
-  font-size: 0.8rem;
+  font-size: var(--t-caption);
   font-weight: 600;
   color: var(--ink-2);
   background: var(--bg-sunken);

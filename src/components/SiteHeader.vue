@@ -25,6 +25,8 @@ function toggle() { apply(!dark.value) }
 onMounted(() => {
   let saved: string | null = null
   try { saved = localStorage.getItem('df-theme') } catch { /* private mode */ }
+  // Ivory is the brand's default look; dark mode follows the visitor's own
+  // choice, falling back to their OS preference.
   apply(saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches)
   window.addEventListener('scroll', onScroll, { passive: true })
   onScroll()
@@ -90,39 +92,40 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .hdr.solid {
   background: var(--surface-glass);
   border-bottom-color: var(--line);
-  backdrop-filter: blur(16px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: var(--shadow-sm);
 }
 
 .inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  height: 66px;
+  gap: var(--sp-4);
+  /* Compact by design — an oversized bar eats the hero. */
+  height: 62px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--sp-3);
 }
 
 .logo {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   color: var(--on-fill);
   background: var(--brand);
-  box-shadow: 0 3px 12px color-mix(in srgb, var(--brand) 35%, transparent);
 }
 
 .wordmark {
   font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  font-size: 1.18rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .wordmark em {
@@ -134,13 +137,13 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .nav {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--sp-2);
 }
 
 .link {
   padding: 8px 13px;
   border-radius: 999px;
-  font-size: 0.86rem;
+  font-size: var(--t-meta);
   font-weight: 500;
   color: var(--ink-2);
   transition: color 0.2s var(--ease), background 0.2s var(--ease);
@@ -151,10 +154,10 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .admin {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: var(--sp-2);
   padding: 7px 13px;
   border-radius: 999px;
-  font-size: 0.82rem;
+  font-size: var(--t-meta);
   font-weight: 500;
   color: var(--ink-2);
   background: var(--bg-elev);
@@ -183,11 +186,12 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   border-radius: 50%;
   color: var(--ink-2);
   border: 1px solid var(--line);
-  background: var(--bg-elev);
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
+  background: transparent;
+  transition: color 0.22s var(--ease), border-color 0.22s var(--ease),
+              background 0.22s var(--ease);
 }
 
-.theme:hover { color: var(--ink); border-color: var(--line-2); transform: rotate(-12deg); }
+.theme:hover { color: var(--ink); border-color: var(--line-2); background: var(--bg-sunken); }
 
 @media (max-width: 560px) {
   .link { display: none; }
