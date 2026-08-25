@@ -372,7 +372,8 @@ const steps = [
 
 /* How */
 .how {
-  background: var(--bg-sunken);
+  /* Translucent so the page gradient carries through the full height. */
+  background: color-mix(in srgb, var(--bg-sunken) 55%, transparent);
   border-block: 1px solid var(--line);
 }
 

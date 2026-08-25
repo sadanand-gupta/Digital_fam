@@ -26,11 +26,23 @@
 
 * { margin: 0; }
 
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; min-height: 100%; }
+
+/*
+ * The page gradient sits on html, not body. The ambient backdrop is a
+ * z-index:-1 child of body, which paints behind body's own background — put
+ * the gradient on body and the orbs disappear underneath it.
+ */
+html {
+  background: var(--bg);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+}
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  /* Transparent so the html gradient and the orbs above it both show. */
+  background: transparent;
   color: var(--ink);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;

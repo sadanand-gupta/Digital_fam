@@ -4,48 +4,89 @@
  * To restyle the site, change the RAW PALETTE below. No component hardcodes a
  * colour, so nothing else needs touching.
  *
- * Scheme: warm ivory ground, deep navy brand, muted gold accent.
- * Navy is the dominant brand and action colour; gold stays deliberately
- * sparing — used everywhere it stops reading as gold and starts reading as
- * beige.
+ * Scheme — five colours:
+ *   Deep Navy      #071A41  primary: buttons, headers, filled surfaces
+ *   Warm Ivory     #F7F2E8  page background
+ *   Champagne Gold #B89B5E  accent: stars, rules, eyebrows
+ *   Pure Cream     #FFFDF8  cards and raised surfaces
+ *   Charcoal Navy  #111827  body text
  *
- * One rule worth keeping: text needs 4.5:1 contrast against what sits behind
- * it. The display gold and muted grey below are correct for decorative use but
- * too light for small text on ivory, so each has a darker -ink counterpart.
+ * One constraint worth knowing: Champagne Gold sits at 54% lightness — the
+ * middle of the range. That makes it excellent as a *surface* (navy on gold is
+ * 6.4:1) and as decoration, but unreadable as small text on ivory (2.4:1) and
+ * unable to carry white text (2.7:1). --c-gold-ink below is the same hue
+ * darkened for the text case; everything decorative uses the exact gold.
+ *
  * Check any new pair at https://webaim.org/resources/contrastchecker/
  */
 
 :root {
   /* ---------- RAW PALETTE — edit these to restyle the site ---------- */
 
-  /* Navy — brand, primary actions, headings. */
+  /* Deep Navy — primary. */
   --c-navy: #071a41;
-  --c-navy-soft: #23385e;
+  --c-navy-soft: #1b2f57;
 
-  /* Gold — accent. Sparing by design. */
-  --c-gold: #a58a4a;
-  /* Darkened for small text (the display tone reads 3.0:1 on ivory). */
-  --c-gold-ink: #786430;
+  /* Champagne Gold — accent. */
+  --c-gold: #b89b5e;
+  /* Same hue darkened, for small text on ivory and cream. */
+  --c-gold-ink: #6f5a2c;
+  /*
+   * Rating amber, matching what every real review platform uses (Google
+   * #FBBC04, Amazon #FFA41C, IMDb #F5C518). Bright amber is what makes a star
+   * rating instantly readable as a rating.
+   *
+   * It sits ~1.7:1 on a light card, below the 3:1 WCAG asks of non-text
+   * graphics — so StarRating strokes each star with --c-star-edge. The
+   * outlined SHAPE carries the meaning at 3:1+, exactly how Google's own
+   * stars stay legible, and the accessible name states the score in words.
+   */
+  --c-star: #f5b301;
+  --c-star-edge: #a06f00;
 
-  /* Warm neutrals. */
-  --c-bg: #f8f4ea;
+  /* Warm Ivory ground, Pure Cream cards. */
+  --c-bg: #f7f2e8;
+  /*
+   * Cool end of the page gradient. Stops here because it is the deepest blue
+   * that still clears 4.5:1 for the gold eyebrows (4.53:1) and muted text
+   * (5.01:1) — a gradient has to stay readable at every stop, not just one.
+   */
+  --c-bg-blue: #e3ebf6;
+
+  /*
+   * Ambient orb tints. Kept light on purpose: an orb darkens whatever it
+   * drifts over, and the page already runs close to the contrast floor at the
+   * gradient's blue end. These values keep every text tone above 4.5:1 even
+   * with an orb sitting directly beneath it.
+   */
+  --c-orb-1: #bcd4ef;
+  --c-orb-2: #e6dcc2;
+  --c-orb-3: #cfe2f5;
   --c-surface: #fffdf8;
-  --c-sunken: #f2ecdd;
+  --c-sunken: #efe8d9;
   --c-border: #e5ded0;
-  --c-muted: #718096;
-  /* Darkened for small text (the display tone reads 3.7:1 on ivory). */
-  --c-muted-ink: #59677a;
 
-  /* Dark theme. */
-  --c-bg-dark: #081326;
-  --c-surface-dark: #0d1b32;
-  --c-card-dark: #11223d;
-  --c-text-dark: #f6f1e7;
-  --c-muted-dark: #aab4c5;
-  --c-gold-dark: #c5a866;
-  --c-border-dark: rgba(246, 241, 231, 0.12);
+  /* Charcoal Navy text, with two lighter steps for hierarchy. */
+  --c-text: #111827;
+  --c-text-2: #3d4657;
+  --c-text-3: #4e5870;
 
-  /* Shadow tint, as raw channels. */
+  /* Dark theme — navy deepened as the ground, gold and ivory on top. */
+  --c-bg-dark: #060f22;
+  /* Deepened navy for the dark gradient's far end. */
+  --c-bg-blue-dark: #0a1a38;
+  --c-orb-1-dark: #1d4a8a;
+  --c-orb-2-dark: #6b5a2e;
+  --c-orb-3-dark: #16385f;
+  --c-surface-dark: #0b1730;
+  --c-card-dark: #101f3c;
+  --c-text-dark: #f7f2e8;
+  --c-text-2-dark: #aab4c5;
+  --c-text-3-dark: #8794a8;
+  --c-gold-dark: #cbb078;
+  --c-border-dark: rgba(247, 242, 232, 0.12);
+
+  /* Shadow tint, as raw channels (Deep Navy). */
   --c-shadow-rgb: 7, 26, 65;
 
   /* ---------- SPACING — one scale, used everywhere ---------- */
@@ -72,26 +113,47 @@
 
   /* ---------- SEMANTIC TOKENS — components use only these ---------- */
   --bg: var(--c-bg);
+  /*
+   * Page gradient: warm ivory at the top settling into a cool blue at the
+   * bottom. Fixed attachment so it spans the page rather than repeating per
+   * section, and every card keeps its own solid --bg-elev on top.
+   */
+  --bg-gradient: linear-gradient(170deg, var(--c-bg) 0%, var(--c-bg) 32%, var(--c-bg-blue) 100%);
   --bg-elev: var(--c-surface);
   --bg-sunken: var(--c-sunken);
   --surface-glass: rgba(255, 253, 248, 0.86);
 
-  --ink: var(--c-navy);
-  --ink-2: var(--c-navy-soft);
-  --ink-3: var(--c-muted-ink);
+  --orb-1: var(--c-orb-1);
+  --orb-2: var(--c-orb-2);
+  --orb-3: var(--c-orb-3);
+  /* Low, because a blurred orb at full strength swamps the text above it. */
+  --orb-alpha: 0.55;
+
+  --ink: var(--c-text);
+  --ink-2: var(--c-text-2);
+  --ink-3: var(--c-text-3);
   --ink-inv: #ffffff;
 
   --line: var(--c-border);
-  --line-2: #d8cfbc;
+  --line-2: #d6cdb9;
 
   --brand: var(--c-navy);
   --brand-2: var(--c-navy-soft);
 
-  /* 'gold' is the accent slot. -ink is its readable counterpart. */
+  /* 'gold' is the accent slot; -ink is its readable counterpart. */
   --gold: var(--c-gold);
   --gold-2: var(--c-gold-ink);
   --gold-ink: var(--c-gold-ink);
   --accent-surface: var(--c-gold-ink);
+
+  --star: var(--c-star);
+  --star-edge: var(--c-star-edge);
+  /*
+   * Empty stars: the gap between 4 and 5 is information, so they must clear
+   * 3:1 too — a pale tint reads as nothing at 15px.
+   */
+  --star-empty: #d8d0c0;
+  --star-empty-edge: #8e846f;
 
   --ok: var(--c-gold-ink);
   /* Deep filled surfaces — the closing CTA band and active filter chips. */
@@ -109,26 +171,37 @@
 
 :root[data-theme='dark'] {
   --bg: var(--c-bg-dark);
+  --bg-gradient: linear-gradient(170deg, var(--c-bg-dark) 0%, var(--c-bg-dark) 32%, var(--c-bg-blue-dark) 100%);
   --bg-elev: var(--c-card-dark);
   --bg-sunken: var(--c-surface-dark);
-  --surface-glass: rgba(13, 27, 50, 0.86);
+  --surface-glass: rgba(11, 23, 48, 0.86);
+
+  --orb-1: var(--c-orb-1-dark);
+  --orb-2: var(--c-orb-2-dark);
+  --orb-3: var(--c-orb-3-dark);
+  --orb-alpha: 0.55;
 
   --ink: var(--c-text-dark);
-  --ink-2: var(--c-muted-dark);
-  --ink-3: #8c97a8;
+  --ink-2: var(--c-text-2-dark);
+  --ink-3: var(--c-text-3-dark);
   --ink-inv: var(--c-bg-dark);
 
   --line: var(--c-border-dark);
-  --line-2: rgba(246, 241, 231, 0.2);
+  --line-2: rgba(247, 242, 232, 0.2);
 
   /* Navy is invisible on navy, so gold carries actions here. */
   --brand: var(--c-gold-dark);
-  --brand-2: #d4bb84;
+  --brand-2: #dcc48f;
 
   --gold: var(--c-gold-dark);
-  --gold-2: #d4bb84;
+  --gold-2: #dcc48f;
   --gold-ink: var(--c-gold-dark);
   --accent-surface: var(--c-gold-dark);
+
+  --star: #ffc42e;
+  --star-edge: #6b4a00;
+  --star-empty: rgba(247, 242, 232, 0.16);
+  --star-empty-edge: rgba(247, 242, 232, 0.45);
 
   --ok: var(--c-gold-dark);
   --fill-deep: var(--c-card-dark);

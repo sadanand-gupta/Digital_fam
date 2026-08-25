@@ -61,7 +61,7 @@ const mapEmbed = computed(() => {
   /* Tall enough to feel cinematic, short enough to stay context not subject. */
   height: clamp(200px, 32vw, 340px);
   overflow: hidden;
-  background: var(--bg-sunken);
+  background: var(--bg);
 }
 
 .shot,

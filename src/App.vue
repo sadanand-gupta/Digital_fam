@@ -13,6 +13,7 @@ import HomeView from './components/HomeView.vue'
 import StoreView from './components/StoreView.vue'
 import CopyToast from './components/CopyToast.vue'
 import AdminLogin from './components/AdminLogin.vue'
+import AmbientBackdrop from './components/AmbientBackdrop.vue'
 
 const { path, navigate } = useRoute()
 const { copy, copiedId } = useClipboard()
@@ -97,6 +98,8 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
+  <AmbientBackdrop />
+
   <SiteHeader
     :is-admin="isAdmin"
     :show-nav="showDirectory"
@@ -202,9 +205,10 @@ const year = new Date().getFullYear()
 .missing p { color: var(--ink-2); max-width: 44ch; }
 
 .footer {
-  padding: 40px 0;
+  padding: var(--sp-7) 0;
   border-top: 1px solid var(--line);
-  background: var(--bg-sunken);
+  /* Translucent so the page gradient carries through the full height. */
+  background: color-mix(in srgb, var(--bg-sunken) 55%, transparent);
 }
 
 .inner {

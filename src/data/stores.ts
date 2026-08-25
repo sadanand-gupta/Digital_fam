@@ -25,7 +25,7 @@ export const stores: Store[] = [
     // MMDA Colony, Arumbakkam. Drives the map banner until a storefront photo
     // is added; drop a file in public/shops/ and set bannerImage to use one.
     coords: { lat: 13.0694, lng: 80.2143 },
-    accent: ['#03153d', '#7d631f'],
+    accent: ['#071a41', '#b89b5e'],
     logoMark: 'C',
     reviews: [
       // Great — unreserved 5s, still specific rather than gushing.

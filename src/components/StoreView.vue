@@ -309,23 +309,29 @@ function restoreAll() {
   max-width: 44ch;
 }
 
+/*
+ * The reputation line — the one number a visitor scans for. It gets its own
+ * tinted panel so it reads as a highlight rather than another row of text.
+ */
 .rating {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  margin-top: var(--sp-3);
-  padding-top: var(--sp-4);
-  border-top: 1px solid var(--line);
-  width: 100%;
-  max-width: 320px;
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--star);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev);
 }
 
 .score {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.55rem;
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.01em;
+  color: var(--gold-ink);
 }
 
 .count {
