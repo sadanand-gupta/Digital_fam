@@ -113,8 +113,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  color: #fff;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: var(--on-fill);
+  background: var(--brand);
   box-shadow: 0 3px 12px color-mix(in srgb, var(--brand) 35%, transparent);
 }
 
@@ -170,8 +170,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  color: #fff;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: var(--on-fill);
+  background: var(--brand);
 }
 
 .theme {

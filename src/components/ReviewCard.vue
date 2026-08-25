@@ -76,7 +76,7 @@ const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
   position: absolute;
   inset: 0 0 auto 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--a), var(--b));
+  background: var(--b);
   opacity: 0;
   transition: opacity 0.25s var(--ease);
 }
@@ -142,8 +142,8 @@ const wordCount = computed(() => props.review.text.trim().split(/\s+/).length)
   border-radius: 999px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, var(--a), var(--b));
+  color: var(--on-fill);
+  background: var(--a);
   box-shadow: 0 2px 10px color-mix(in srgb, var(--a) 30%, transparent);
   transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), background 0.25s var(--ease);
 }

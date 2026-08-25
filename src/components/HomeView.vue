@@ -192,10 +192,8 @@ const steps = [
   width: 900px;
   height: 620px;
   transform: translateX(-50%);
-  background:
-    radial-gradient(closest-side, color-mix(in srgb, var(--brand) 22%, transparent), transparent),
-    radial-gradient(closest-side at 70% 60%, color-mix(in srgb, var(--brand-2) 18%, transparent), transparent);
-  filter: blur(20px);
+  background: var(--bg-sunken);
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -236,7 +234,7 @@ const steps = [
 }
 
 .grad {
-  background: linear-gradient(115deg, var(--brand), var(--brand-2));
+  background: var(--brand);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -354,9 +352,9 @@ const steps = [
 .filter:hover { border-color: var(--line-2); color: var(--ink); }
 
 .filter.on {
-  color: #fff;
+  color: var(--on-fill);
   border-color: transparent;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  background: var(--brand);
   box-shadow: 0 3px 12px color-mix(in srgb, var(--brand) 30%, transparent);
 }
 
@@ -402,7 +400,7 @@ const steps = [
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  background: var(--brand);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

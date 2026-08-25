@@ -4,6 +4,7 @@ import type { Store, Review } from '../types'
 import { CATEGORY_LABELS, SENTIMENTS, SENTIMENT_LABELS, type Sentiment } from '../types'
 import ReviewCard from './ReviewCard.vue'
 import StoreBanner from './StoreBanner.vue'
+import GoogleMapsIcon from './GoogleMapsIcon.vue'
 import StarRating from './StarRating.vue'
 import { useUsedReviews } from '../composables/useUsedReviews'
 import { bestReviewTarget } from '../data/mapsLinks'
@@ -137,13 +138,8 @@ function restoreAll() {
               rel="noopener noreferrer"
               class="maps"
             >
-              <svg v-if="reviewTarget.direct" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3 2 9.4l7-.9z" />
-              </svg>
-              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" />
-              </svg>
-              {{ reviewTarget.direct ? 'Write a review on Google Maps' : 'Open in Google Maps' }}
+              <GoogleMapsIcon :size="18" />
+              {{ reviewTarget.direct ? 'Write a review' : 'Open listing' }}
             </a>
           </aside>
         </div>
@@ -244,10 +240,8 @@ function restoreAll() {
           <p v-else>Open {{ store.name }} on Google Maps and paste it in.</p>
         </div>
         <a :href="reviewTarget.url" target="_blank" rel="noopener noreferrer" class="btn cta-btn">
-          {{ reviewTarget.direct ? 'Write the review on Google Maps' : 'Open in Google Maps' }}
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M7 17L17 7M8 7h9v9" />
-          </svg>
+          <GoogleMapsIcon :size="17" />
+          {{ reviewTarget.direct ? 'Write the review' : 'Open listing' }}
         </a>
       </div>
     </section>
@@ -275,7 +269,8 @@ function restoreAll() {
   width: 1000px;
   height: 620px;
   transform: translateX(-50%);
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--a) 14%, transparent), transparent);
+  background: var(--bg-sunken);
+  opacity: 0.45;
   filter: blur(24px);
   pointer-events: none;
 }
@@ -322,8 +317,8 @@ function restoreAll() {
   font-family: var(--font-display);
   font-size: 1.7rem;
   font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, var(--a), var(--b));
+  color: var(--on-fill);
+  background: var(--a);
   box-shadow: 0 6px 20px color-mix(in srgb, var(--a) 38%, transparent);
 }
 
@@ -393,8 +388,8 @@ function restoreAll() {
   border-radius: 999px;
   font-size: 0.87rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, var(--a), var(--b));
+  color: var(--on-fill);
+  background: var(--a);
   box-shadow: 0 4px 16px color-mix(in srgb, var(--a) 32%, transparent);
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
@@ -463,9 +458,9 @@ function restoreAll() {
 .filter:hover { color: var(--ink); border-color: var(--line-2); }
 
 .filter.on {
-  color: var(--ink-inv);
-  border-color: var(--a);
-  background: var(--a);
+  color: var(--on-fill);
+  border-color: var(--fill-deep);
+  background: var(--fill-deep);
 }
 
 .status {
@@ -521,8 +516,8 @@ function restoreAll() {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  color: #fff;
-  background: linear-gradient(135deg, var(--a), var(--b));
+  color: var(--on-fill);
+  background: var(--a);
   box-shadow: 0 6px 18px color-mix(in srgb, var(--a) 34%, transparent);
 }
 
@@ -589,8 +584,8 @@ function restoreAll() {
   gap: 22px;
   padding: 34px;
   border-radius: var(--radius-xl);
-  color: #fff;
-  background: linear-gradient(120deg, var(--a), var(--b));
+  color: var(--on-fill);
+  background: var(--fill-deep);
   box-shadow: var(--shadow-lg);
 }
 
@@ -605,9 +600,9 @@ function restoreAll() {
 }
 
 .cta-btn {
-  background: #fff;
-  color: #111;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  background: var(--on-fill);
+  color: var(--ink);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
 }
 
 .cta-btn:hover { transform: translateY(-2px); }

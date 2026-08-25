@@ -138,8 +138,8 @@ function fail(message: string) {
   width: 44px;
   height: 44px;
   border-radius: 13px;
-  color: #fff;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: var(--on-fill);
+  background: var(--brand);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--brand) 35%, transparent);
 }
 
@@ -206,11 +206,11 @@ function fail(message: string) {
 
 .err {
   font-size: 0.83rem;
-  color: #dc2626;
+  color: var(--danger);
   line-height: 1.5;
 }
 
-:root[data-theme='dark'] .err { color: #f87171; }
+
 
 .full { width: 100%; justify-content: center; margin-top: 4px; }
 

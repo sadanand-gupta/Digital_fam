@@ -86,7 +86,7 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
   position: absolute;
   inset: auto 0 0 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--a), var(--b));
+  background: var(--b);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.35s var(--ease);
@@ -154,8 +154,8 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, var(--a), var(--b));
+  color: var(--on-fill);
+  background: var(--a);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--a) 35%, transparent);
 }
 
@@ -251,8 +251,8 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
 
 .store:hover .arrow {
   transform: translateX(3px);
-  color: #fff;
-  background: linear-gradient(135deg, var(--a), var(--b));
+  color: var(--on-fill);
+  background: var(--a);
 }
 
 .setlive {
@@ -272,9 +272,9 @@ const emit = defineEmits<{ open: [slug: string]; selectPublic: [slug: string] }>
 }
 
 .setlive:hover {
-  color: #fff;
+  color: var(--on-fill);
   border-color: transparent;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  background: var(--brand);
 }
 
 .setlive.is-live {

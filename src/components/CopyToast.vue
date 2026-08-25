@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import GoogleMapsIcon from './GoogleMapsIcon.vue'
 defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
 </script>
 
@@ -16,10 +17,8 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
         <span v-else>Open Maps and paste it in — that's it.</span>
       </div>
       <a v-if="mapsUrl" :href="mapsUrl" target="_blank" rel="noopener noreferrer" class="go">
-        {{ direct ? 'Write review on Maps' : 'Open Maps' }}
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M7 17L17 7M8 7h9v9" />
-        </svg>
+        <GoogleMapsIcon :size="15" />
+        {{ direct ? 'Write review' : 'Open listing' }}
       </a>
     </div>
   </Transition>
@@ -51,7 +50,7 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  color: #fff;
+  color: var(--on-fill);
   background: var(--ok);
 }
 
@@ -73,8 +72,8 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: var(--on-fill);
+  background: var(--brand);
   transition: transform 0.18s var(--ease);
 }
 

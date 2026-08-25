@@ -1,36 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import './theme.css';
 
 :root {
-  /* Surfaces — warm paper, not clinical white. */
-  --bg: #faf7f2;
-  --bg-elev: #fffdfa;
-  --bg-sunken: #f2ece2;
-  --surface-glass: rgba(255, 253, 250, 0.78);
-
-  /* Ink — soft black with a hint of warmth, easier on the eye than #000. */
-  --ink: #241f1a;
-  --ink-2: #5c5248;
-  --ink-3: #8d8175;
-  --ink-inv: #fffdfa;
-
-  --line: rgba(36, 31, 26, 0.08);
-  --line-2: rgba(36, 31, 26, 0.15);
-
-  /* Brand — terracotta and olive: warm, appetising, calm. */
-  --brand: #b4532a;
-  --brand-2: #8a6d3b;
-  --gold: #c08a2e;
-  --ok: #5c7a52;
-
   --radius-sm: 8px;
   --radius: 14px;
   --radius-lg: 20px;
   --radius-xl: 28px;
-
-  /* Shadows tinted warm so cards sit on the page rather than float above it. */
-  --shadow-sm: 0 1px 2px rgba(60, 45, 32, 0.05), 0 1px 3px rgba(60, 45, 32, 0.03);
-  --shadow: 0 2px 8px rgba(60, 45, 32, 0.05), 0 8px 28px rgba(60, 45, 32, 0.06);
-  --shadow-lg: 0 6px 20px rgba(60, 45, 32, 0.07), 0 20px 56px rgba(60, 45, 32, 0.09);
 
   --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
@@ -38,28 +13,6 @@
   /* Slow, settled easing — nothing should snap. */
   --ease: cubic-bezier(0.32, 0.72, 0.28, 1);
   --maxw: 1120px;
-}
-
-:root[data-theme='dark'],
-html.dark {
-  /* Warm near-black, like a dim dining room rather than a screen. */
-  --bg: #16130f;
-  --bg-elev: #1f1b16;
-  --bg-sunken: #110e0b;
-  --surface-glass: rgba(31, 27, 22, 0.78);
-  --ink: #f2ebe1;
-  --ink-2: #c0b4a5;
-  --ink-3: #8d8175;
-  --ink-inv: #16130f;
-  --line: rgba(242, 235, 225, 0.09);
-  --line-2: rgba(242, 235, 225, 0.16);
-  --brand: #d97d52;
-  --brand-2: #b39a68;
-  --gold: #d9a94e;
-  --ok: #8aa87d;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.45), 0 8px 28px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.5), 0 20px 56px rgba(0, 0, 0, 0.42);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -119,11 +72,23 @@ a { color: inherit; text-decoration: none; }
 body { font-weight: 400; letter-spacing: 0.005em; }
 
 .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 0.68rem;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--ink-3);
+  color: var(--gold-ink);
+}
+
+/* Short gold rule beside the eyebrow — the one flourish in the whole system. */
+.eyebrow::after {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.6;
 }
 
 /* ---------- Buttons ---------- */
@@ -147,13 +112,13 @@ body { font-weight: 400; letter-spacing: 0.005em; }
 
 .btn-primary {
   background: var(--brand);
-  color: #fffdfa;
+  color: var(--ink-inv);
   box-shadow: 0 2px 10px color-mix(in srgb, var(--brand) 22%, transparent);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  background: color-mix(in srgb, var(--brand) 88%, #000);
+  background: var(--brand-2);
   box-shadow: 0 6px 18px color-mix(in srgb, var(--brand) 28%, transparent);
 }
 
