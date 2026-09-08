@@ -3,16 +3,16 @@
  * built their mastheads on. Carries business names and section headings.
  * Instrument Sans — a quiet modern grotesque for everything the user operates,
  * so it never competes with the serif above it.
+ *
+ * The font request itself lives in index.html, not here: an @import inside
+ * this file would not start downloading until the CSS bundle had been
+ * fetched and parsed.
  */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Instrument+Sans:wght@400;500;600&display=swap');
 @import './theme.css';
 
 :root {
-  /* Restrained radii: tags stay tight, major cards get 16–18px, nothing more. */
   --radius-sm: 6px;
-  --radius: 12px;
   --radius-lg: 16px;
-  --radius-xl: 18px;
 
   --font: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
@@ -29,9 +29,8 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; min-height: 100%; }
 
 /*
- * The page gradient sits on html, not body. The ambient backdrop is a
- * z-index:-1 child of body, which paints behind body's own background — put
- * the gradient on body and the orbs disappear underneath it.
+ * The page gradient sits on html, not body, with fixed attachment — so it
+ * spans the whole document as one wash instead of restarting per section.
  */
 html {
   background: var(--bg);
@@ -41,7 +40,7 @@ html {
 
 body {
   font-family: var(--font);
-  /* Transparent so the html gradient and the orbs above it both show. */
+  /* Transparent so the gradient painted on html shows through. */
   background: transparent;
   color: var(--ink);
   line-height: 1.6;
@@ -98,40 +97,6 @@ body {
   font-size: var(--t-body);
 }
 
-/* Editorial lead paragraph — one step up, and never bold. */
-.lede {
-  font-size: var(--t-lead);
-  font-weight: 400;
-  line-height: 1.72;
-  color: var(--ink-2);
-}
-
-.meta {
-  font-size: var(--t-meta);
-  color: var(--ink-3);
-  letter-spacing: 0.01em;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-3);
-  font-size: var(--t-eyebrow);
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--gold-ink);
-}
-
-/* Short gold rule beside the eyebrow — the one flourish in the whole system. */
-.eyebrow::after {
-  content: '';
-  width: 28px;
-  height: 1px;
-  background: var(--gold);
-  opacity: 0.7;
-}
-
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;
@@ -181,11 +146,6 @@ body {
   transform: translateY(-1px);
 }
 
-.btn-sm { padding: 9px 16px; font-size: var(--t-meta); }
-
-/* Squared variant for buttons that sit inside cards rather than float. */
-.btn-square { border-radius: var(--radius-sm); }
-
 /* ---------- Cards ---------- */
 .card {
   background: var(--bg-elev);
@@ -193,55 +153,6 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
-
-/* ---------- Utility ---------- */
-.sr-only {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 500;
-  background: var(--bg-sunken);
-  color: var(--ink-2);
-  border: 1px solid var(--line);
-}
-
-/* ---------- Animations ---------- */
-@keyframes rise {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: none; }
-}
-
-/* A slow settle for hero elements — reads as composed rather than bouncy. */
-@keyframes settle {
-  from { opacity: 0; transform: translateY(14px) scale(0.995); }
-  to { opacity: 1; transform: none; }
-}
-
-@keyframes fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes pop {
-  0% { transform: scale(0.9); opacity: 0; }
-  60% { transform: scale(1.02); }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.rise { animation: settle 0.9s var(--ease) both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

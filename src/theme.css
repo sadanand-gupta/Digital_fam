@@ -53,15 +53,6 @@
    */
   --c-bg-blue: #e3ebf6;
 
-  /*
-   * Ambient orb tints. Kept light on purpose: an orb darkens whatever it
-   * drifts over, and the page already runs close to the contrast floor at the
-   * gradient's blue end. These values keep every text tone above 4.5:1 even
-   * with an orb sitting directly beneath it.
-   */
-  --c-orb-1: #bcd4ef;
-  --c-orb-2: #e6dcc2;
-  --c-orb-3: #cfe2f5;
   --c-surface: #fffdf8;
   --c-sunken: #efe8d9;
   --c-border: #e5ded0;
@@ -75,9 +66,6 @@
   --c-bg-dark: #060f22;
   /* Deepened navy for the dark gradient's far end. */
   --c-bg-blue-dark: #0a1a38;
-  --c-orb-1-dark: #1d4a8a;
-  --c-orb-2-dark: #6b5a2e;
-  --c-orb-3-dark: #16385f;
   --c-surface-dark: #0b1730;
   --c-card-dark: #101f3c;
   --c-text-dark: #f7f2e8;
@@ -98,8 +86,6 @@
   --sp-6: 32px;
   --sp-7: 48px;
   --sp-8: 64px;
-  --sp-9: 96px;
-  --sp-10: 128px;
 
   /* ---------- TYPE SCALE ---------- */
   --t-eyebrow: 0.7rem;
@@ -108,7 +94,6 @@
   --t-body: 0.95rem;
   --t-lead: 1.06rem;
   --t-h3: 1.15rem;
-  --t-h2: clamp(1.5rem, 3vw, 2.05rem);
   --t-h1: clamp(2rem, 5vw, 3.1rem);
 
   /* ---------- SEMANTIC TOKENS — components use only these ---------- */
@@ -123,16 +108,9 @@
   --bg-sunken: var(--c-sunken);
   --surface-glass: rgba(255, 253, 248, 0.86);
 
-  --orb-1: var(--c-orb-1);
-  --orb-2: var(--c-orb-2);
-  --orb-3: var(--c-orb-3);
-  /* Low, because a blurred orb at full strength swamps the text above it. */
-  --orb-alpha: 0.55;
-
   --ink: var(--c-text);
   --ink-2: var(--c-text-2);
   --ink-3: var(--c-text-3);
-  --ink-inv: #ffffff;
 
   --line: var(--c-border);
   --line-2: #d6cdb9;
@@ -142,9 +120,7 @@
 
   /* 'gold' is the accent slot; -ink is its readable counterpart. */
   --gold: var(--c-gold);
-  --gold-2: var(--c-gold-ink);
   --gold-ink: var(--c-gold-ink);
-  --accent-surface: var(--c-gold-ink);
 
   --star: var(--c-star);
   --star-edge: var(--c-star-edge);
@@ -156,12 +132,8 @@
   --star-empty-edge: #8e846f;
 
   --ok: var(--c-gold-ink);
-  /* Deep filled surfaces — the closing CTA band and active filter chips. */
-  --fill-deep: var(--c-navy);
 
   --on-fill: #ffffff;
-  --danger: #b02a2a;
-  --scrim-rgb: 7, 26, 65;
 
   /* Restrained shadows — depth comes from spacing, not drop shadows. */
   --shadow-sm: 0 1px 2px rgba(var(--c-shadow-rgb), 0.04);
@@ -176,15 +148,9 @@
   --bg-sunken: var(--c-surface-dark);
   --surface-glass: rgba(11, 23, 48, 0.86);
 
-  --orb-1: var(--c-orb-1-dark);
-  --orb-2: var(--c-orb-2-dark);
-  --orb-3: var(--c-orb-3-dark);
-  --orb-alpha: 0.55;
-
   --ink: var(--c-text-dark);
   --ink-2: var(--c-text-2-dark);
   --ink-3: var(--c-text-3-dark);
-  --ink-inv: var(--c-bg-dark);
 
   --line: var(--c-border-dark);
   --line-2: rgba(247, 242, 232, 0.2);
@@ -194,9 +160,7 @@
   --brand-2: #dcc48f;
 
   --gold: var(--c-gold-dark);
-  --gold-2: #dcc48f;
   --gold-ink: var(--c-gold-dark);
-  --accent-surface: var(--c-gold-dark);
 
   --star: #ffc42e;
   --star-edge: #6b4a00;
@@ -204,11 +168,9 @@
   --star-empty-edge: rgba(247, 242, 232, 0.45);
 
   --ok: var(--c-gold-dark);
-  --fill-deep: var(--c-card-dark);
 
   /* Filled surfaces are gold here, so their text is the dark ground. */
   --on-fill: var(--c-bg-dark);
-  --danger: #ff8a80;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);

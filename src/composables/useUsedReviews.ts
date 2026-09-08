@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 const KEY = 'df-used-reviews'
 
@@ -49,5 +49,5 @@ export function useUsedReviews() {
 
   const isUsed = (id: string) => used.value.has(id)
 
-  return { used: computed(() => used.value), markUsed, resetMany, isUsed }
+  return { markUsed, resetMany, isUsed }
 }

@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import iconUrl from '../assets/google-maps.png'
-
 /**
- * Google Maps pin, so the destination is recognisable at a glance without
- * spelling out "Google Maps" in the label.
+ * Map pin, so the destination reads as a map without spelling it out.
  *
- * Imported rather than referenced by path so Vite fingerprints and inlines it
- * — the icon ships with the bundle instead of costing a separate request.
+ * Was a 22.68 KB PNG — for an icon rendered at 18px. Inline SVG instead:
+ * a few hundred bytes, sharp at any density, tinted by the button it sits in,
+ * and no third-party asset licence to attribute.
+ *
+ * Decorative on purpose: every button this appears in already names the
+ * action in text, so a second announcement would only add noise.
  */
 withDefaults(defineProps<{ size?: number }>(), { size: 18 })
 </script>
 
 <template>
-  <img
-    :src="iconUrl"
+  <svg
+    class="gm"
     :width="size"
     :height="size"
-    class="gm"
-    alt="Google Maps"
-    decoding="async"
-    draggable="false"
-  />
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
 </template>
 
 <style scoped>
-/*
- * Sized by the width/height attributes; these keep it from being stretched by
- * a flex parent and hold the square aspect on every button it sits in.
- */
-.gm {
-  flex: none;
-  object-fit: contain;
-  user-select: none;
-}
+/* Held square so a flex parent cannot stretch it. */
+.gm { flex: none; }
 </style>

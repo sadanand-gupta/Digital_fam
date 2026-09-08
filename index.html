@@ -10,8 +10,20 @@
       content="Enjoyed your meal at Chickato Crispy Fried Chicken MMDA, Arumbakkam? Pick a review, copy it in a tap, and post it on Google Maps in seconds."
     />
     <title>Chickato Crispy Fried Chicken MMDA — Leave a review</title>
+    <!--
+      Fonts are linked here, not @import-ed from style.css. An @import inside
+      the stylesheet is serial: the browser must fetch and parse the CSS bundle
+      before it even discovers the font request. From here both start together.
+
+      Playfair carries only the wordmark and headings, at 600 and 700 — the
+      italic and the 500 the old request asked for were never used by any rule.
+    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap"
+    />
     <script>
       // Resolve the theme before first paint, so a returning dark-mode visitor
       // never sees a frame of ivory. Mirrors SiteHeader's logic.

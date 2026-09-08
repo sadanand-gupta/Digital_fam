@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
-withDefaults(defineProps<{
-  isAdmin?: boolean
-  /** In-page anchors only exist on the directory, so hide them elsewhere. */
-  showNav?: boolean
-}>(), { isAdmin: false, showNav: false })
-
-const emit = defineEmits<{ home: []; signOut: [] }>()
-
 const scrolled = ref(false)
 const dark = ref(false)
 
@@ -38,29 +30,17 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 <template>
   <header class="hdr" :class="{ solid: scrolled }">
     <div class="container inner">
-      <button class="brand" type="button" @click="emit('home')">
+      <!-- One shop, one page — the mark is identity, not a link. -->
+      <div class="brand">
         <span class="logo" aria-hidden="true">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3 2 9.4l7-.9z" />
           </svg>
         </span>
         <span class="wordmark">Digital<em>Fam</em></span>
-      </button>
+      </div>
 
       <nav class="nav">
-        <template v-if="showNav">
-          <a href="#stores" class="link">Stores</a>
-          <a href="#how" class="link">How it works</a>
-        </template>
-
-        <button v-if="isAdmin" class="admin" type="button" @click="emit('signOut')">
-          <span class="badge" aria-hidden="true">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-            </svg>
-          </span>
-          Sign out
-        </button>
         <button
           class="theme"
           type="button"
@@ -140,43 +120,6 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   gap: var(--sp-2);
 }
 
-.link {
-  padding: 8px 13px;
-  border-radius: 999px;
-  font-size: var(--t-meta);
-  font-weight: 500;
-  color: var(--ink-2);
-  transition: color 0.2s var(--ease), background 0.2s var(--ease);
-}
-
-.link:hover { color: var(--ink); background: var(--bg-sunken); }
-
-.admin {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: 7px 13px;
-  border-radius: 999px;
-  font-size: var(--t-meta);
-  font-weight: 500;
-  color: var(--ink-2);
-  background: var(--bg-elev);
-  border: 1px solid var(--line);
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
-}
-
-.admin:hover { color: var(--ink); border-color: var(--line-2); }
-
-.badge {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  color: var(--on-fill);
-  background: var(--brand);
-}
-
 .theme {
   display: grid;
   place-items: center;
@@ -193,7 +136,4 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
 .theme:hover { color: var(--ink); border-color: var(--line-2); background: var(--bg-sunken); }
 
-@media (max-width: 560px) {
-  .link { display: none; }
-}
 </style>

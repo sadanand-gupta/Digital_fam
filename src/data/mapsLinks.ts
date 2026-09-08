@@ -15,7 +15,7 @@ import type { Store } from '../types'
  *
  * On phones with the Maps app installed, both working forms hand off to it.
  */
-export function reviewUrl(store: Store): string | null {
+function reviewUrl(store: Store): string | null {
   if (store.placeId) {
     return `https://search.google.com/local/writereview?placeid=${encodeURIComponent(store.placeId)}`
   }

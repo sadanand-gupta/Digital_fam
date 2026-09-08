@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import GoogleMapsIcon from './GoogleMapsIcon.vue'
-defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
+/**
+ * Brief confirmation that the text reached the clipboard.
+ *
+ * It used to carry its own "Write review" link and a variant message for the
+ * non-deep-link case. Both are gone: Add review now opens Google itself, so a
+ * second button here would have competed with the tab it just opened.
+ */
+defineProps<{ show: boolean }>()
 </script>
 
 <template>
@@ -13,13 +19,8 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
       </span>
       <div class="body">
         <strong>Review copied</strong>
-        <span v-if="direct">Opens the Google Maps review box — just paste and post.</span>
-        <span v-else>Open Maps and paste it in — that's it.</span>
+        <span>Paste it into the Google review box.</span>
       </div>
-      <a v-if="mapsUrl" :href="mapsUrl" target="_blank" rel="noopener noreferrer" class="go">
-        <GoogleMapsIcon :size="15" />
-        {{ direct ? 'Write review' : 'Open listing' }}
-      </a>
     </div>
   </Transition>
 </template>
@@ -62,22 +63,6 @@ defineProps<{ show: boolean; mapsUrl?: string; direct?: boolean }>()
 
 .body strong { font-size: var(--t-meta); font-weight: 600; }
 .body span { font-size: var(--t-caption); color: var(--ink-3); }
-
-.go {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  flex-shrink: 0;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: var(--t-caption);
-  font-weight: 600;
-  color: var(--on-fill);
-  background: var(--brand);
-  transition: transform 0.18s var(--ease);
-}
-
-.go:hover { transform: translateY(-1px); }
 
 .toast-enter-active { transition: all 0.4s var(--ease); }
 .toast-leave-active { transition: all 0.25s ease-in; }
