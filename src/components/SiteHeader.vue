@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import logo from '../assets/logo.png'
+import logoLight from '../assets/logo-light.png'
+import logoDark from '../assets/logo-dark.png'
+import AdminGate from './AdminGate.vue'
 
 const scrolled = ref(false)
 const dark = ref(false)
@@ -10,6 +12,14 @@ const onScroll = () => { scrolled.value = window.scrollY > 8 }
 function apply(isDark: boolean) {
   dark.value = isDark
   document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+
+  // The address bar takes its colour from this tag. Left static it stays ivory
+  // behind a dark page, which reads as a rendering fault on a phone. A media
+  // query cannot do it — the theme here is a toggle, not an OS preference.
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', isDark ? '#060f22' : '#f7f2e8')
+
   try { localStorage.setItem('df-theme', isDark ? 'dark' : 'light') } catch { /* private mode */ }
 }
 
@@ -33,17 +43,26 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     <div class="container inner">
       <!-- One shop, one page — the mark is identity, not a link. -->
       <div class="brand">
+        <!--
+          Two files, not one recoloured with a filter. The mark is white-on-dark
+          as drawn, and white is invisible on the ivory theme — so the light
+          version has its wordmark repainted in the page's ink while the blue
+          and green are kept. `dark` is already tracked here for the toggle.
+        -->
         <img
           class="logo"
-          :src="logo"
+          :src="dark ? logoDark : logoLight"
           alt="GrowUB — Digital Growth for Businesses"
-          width="280"
-          height="104"
+          width="352"
+          height="120"
           decoding="async"
         />
       </div>
 
       <nav class="nav">
+        <!-- Staff door. Quiet, but reachable without hunting for it. -->
+        <AdminGate />
+
         <button
           class="theme"
           type="button"
@@ -93,25 +112,11 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   align-items: center;
 }
 
-/*
- * The artwork is light-on-black with the background baked into the PNG, so it
- * cannot simply sit on the ivory page. It gets its own near-black plate
- * instead — #000206 is sampled from the file's own corner, so the plate and
- * the image meet with no visible seam and the mark reads as a deliberate
- * badge rather than a stray black rectangle.
- *
- * Swap this for a transparent PNG or an SVG and the plate can go.
- */
+/* Transparent PNG, so it needs no plate — it sits straight on the page. */
 .logo {
   display: block;
   height: 34px;
   width: auto;
-  padding: 5px 10px;
-  border-radius: 9px;
-  background: #000206;
-  /* Against the dark theme's navy ground the plate would vanish into it, so a
-   * hairline keeps the mark's edge readable in both themes. */
-  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .nav {

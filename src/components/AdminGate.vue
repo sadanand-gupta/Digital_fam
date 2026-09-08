@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import { ADMIN, CONSOLE_URL, SUPER_ADMIN } from '../data/admin'
+import { SUPER_ADMIN } from '../data/admin'
 import { useAdminSession } from '../composables/useAdminSession'
 import AdminSignups from './AdminSignups.vue'
 
-type Stage = 'form' | 'checking' | 'in' | 'denied'
+type Stage = 'form' | 'checking' | 'denied'
 
 /** Long enough to read as "it checked", short enough not to feel broken. */
 const CHECK_MS = 800
@@ -21,8 +21,17 @@ let timer: ReturnType<typeof setTimeout> | undefined
 
 const { signedIn, signIn, signOut: endSession } = useAdminSession()
 
-/* A refresh mid-session should not throw the admin back to the form. */
-if (signedIn.value) stage.value = 'in'
+/**
+ * Signing in lands on the list, not on a confirmation.
+ *
+ * There is nothing to decide at that point — the admin pressed Admin because
+ * they wanted the signups — so a "welcome back" screen charges a tap for
+ * information they already have. A session still open goes straight through.
+ */
+function enter() {
+  if (signedIn.value) listOpen.value = true
+  else open.value = true
+}
 
 /**
  * Checks the typed credentials against data/admin.ts.
@@ -41,7 +50,9 @@ function submit() {
     try {
       signIn(username.value, password.value)
       password.value = ''
-      stage.value = 'in'
+      stage.value = 'form'
+      open.value = false
+      listOpen.value = true
     } catch {
       stage.value = 'denied'
     }
@@ -65,16 +76,20 @@ function signOut() {
 
 function close() {
   open.value = false
-  if (stage.value === 'checking' || stage.value === 'denied') retry()
+  if (stage.value !== 'form') retry()
 }
 
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape' && !listOpen.value) close()
 }
 
-/* The page behind a modal must not scroll, or the modal drifts on a phone. */
+/* Whichever layer is up, the page behind must not scroll, or it drifts under
+ * a thumb on a phone. */
+watch([open, listOpen], ([m, l]) => {
+  document.body.style.overflow = m || l ? 'hidden' : ''
+})
+
 watch(open, isOpen => {
-  document.body.style.overflow = isOpen ? 'hidden' : ''
   if (isOpen) {
     window.addEventListener('keydown', onKey)
     if (stage.value === 'form') nextTick(() => user.value?.focus())
@@ -91,12 +106,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <button class="trigger" type="button" @click="open = true">
+  <button class="trigger" type="button" @click="enter">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="4" y="10" width="16" height="10" rx="2" />
       <path d="M8 10V7a4 4 0 018 0v3" />
     </svg>
-    Admin
+    <span class="word">Admin</span>
   </button>
 
   <Teleport to="body">
@@ -114,30 +129,8 @@ onBeforeUnmount(() => {
             </svg>
           </button>
 
-          <!-- Signed in -->
-          <template v-if="stage === 'in'">
-            <span class="seal ok-seal" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </span>
-            <h2 id="ag-title" class="title">Welcome back</h2>
-            <p class="sub">
-              Signed in as <strong>{{ ADMIN.username }}</strong>. You have access until this
-              tab is closed.
-            </p>
-
-            <button class="btn btn-primary wide" type="button" @click="listOpen = true">
-              View signups
-            </button>
-            <a class="console" :href="CONSOLE_URL" target="_blank" rel="noopener noreferrer">
-              Open in Firebase console
-            </a>
-            <button class="link" type="button" @click="signOut">Sign out</button>
-          </template>
-
           <!-- Checking -->
-          <template v-else-if="stage === 'checking'">
+          <template v-if="stage === 'checking'">
             <span class="spinner" aria-hidden="true" />
             <h2 id="ag-title" class="title">Checking your details</h2>
             <p class="sub" role="status">One moment.</p>
@@ -225,21 +218,24 @@ onBeforeUnmount(() => {
       </div>
     </Transition>
 
-    <AdminSignups v-if="listOpen" @close="listOpen = false" />
+    <AdminSignups v-if="listOpen" @close="listOpen = false" @signout="signOut" />
   </Teleport>
 </template>
 
 <style scoped>
 /* ---------- Trigger ---------- */
+/* Sized to the theme toggle it stands beside — same height, same border,
+ * same resting colour, so the two read as one pair of controls. */
 .trigger {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 7px 14px;
+  height: 36px;
+  padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: transparent;
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-size: var(--t-caption);
   font-weight: 600;
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease),
@@ -249,7 +245,14 @@ onBeforeUnmount(() => {
 .trigger:hover {
   color: var(--ink);
   border-color: var(--line-2);
-  background: var(--bg-elev);
+  background: var(--bg-sunken);
+}
+
+/* On a narrow phone the word is what pushes the header out of line, and the
+ * padlock alone still says what it is. */
+@media (max-width: 420px) {
+  .trigger { width: 36px; padding: 0; justify-content: center; }
+  .trigger .word { display: none; }
 }
 
 .trigger svg { width: 14px; height: 14px; }
@@ -314,11 +317,6 @@ onBeforeUnmount(() => {
 
 .seal svg { width: 21px; height: 21px; }
 
-.ok-seal {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: var(--on-fill);
-}
 
 .deny-seal { color: var(--gold-ink); }
 
@@ -411,14 +409,6 @@ onBeforeUnmount(() => {
 
 .link:hover { color: var(--ink); }
 
-.console {
-  margin-top: var(--sp-3);
-  font-size: var(--t-caption);
-  font-weight: 600;
-  color: var(--gold-ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 
 /* ---------- Spinner ---------- */
 .spinner {

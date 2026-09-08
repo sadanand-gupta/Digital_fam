@@ -5,7 +5,7 @@ import { useOfferSignup } from '../composables/useOfferSignup'
 
 const props = defineProps<{ stars: number; store: string }>()
 
-const { status, savedPhone, submit, reset } = useOfferSignup()
+const { status, savedPhone, submit, reset, clear } = useOfferSignup()
 
 /**
  * How long the number sits still before it saves itself.
@@ -53,11 +53,26 @@ watch([ready, digits], () => {
   )
 })
 
+/** Sends the same details again after a failure. */
+function retry() {
+  if (!ready.value) return
+  reset()
+  submit({ phone: digits.value, stars: props.stars, store: props.store })
+}
+
+/** Hands the form to the next customer on a shared phone or counter tablet. */
+function useAnother() {
+  clear()
+  phone.value = ''
+  consent.value = false
+}
+
 /** Skip cancels a save that has not fired yet. Nothing is kept. */
 function cancel() {
   clearTimeout(timer)
   phone.value = ''
   consent.value = false
+  reset()
 }
 
 defineExpose({ cancel })
@@ -73,9 +88,15 @@ onBeforeUnmount(() => clearTimeout(timer))
         <path d="M20 6L9 17l-5-5" />
       </svg>
     </span>
-    <p class="saved-line">
-      You are on the list as <strong>{{ nice(savedPhone) }}</strong>. Your 10% off is on its way.
-    </p>
+    <div class="saved-body">
+      <p class="saved-line">
+        You are on the list as <strong>{{ nice(savedPhone) }}</strong>. Your 10% off is on
+        its way.
+      </p>
+      <button class="another" type="button" @click="useAnother">
+        Not you? Use a different number
+      </button>
+    </div>
   </div>
 
   <div v-else class="offer">
@@ -92,16 +113,17 @@ onBeforeUnmount(() => clearTimeout(timer))
 
     <p class="body">{{ body }}</p>
 
+    <label class="label" for="of-phone">Your WhatsApp number</label>
     <div class="phone field" :class="{ bad: looksWrong }">
       <span class="cc" aria-hidden="true">+91</span>
       <input
+        id="of-phone"
         v-model="phone"
         type="tel"
         inputmode="numeric"
         autocomplete="tel-national"
         maxlength="15"
-        placeholder="WhatsApp number"
-        aria-label="Your WhatsApp number"
+        placeholder="98765 43210"
         :aria-invalid="looksWrong"
         aria-describedby="of-help"
       />
@@ -116,11 +138,10 @@ onBeforeUnmount(() => clearTimeout(timer))
 
     <p id="of-help" class="status" role="status">
       <span v-if="status === 'saving'" class="working">Saving your number...</span>
-      <span v-else-if="status === 'saved'" class="ok">
-        Saved. Your 10% off is on its way to {{ nice(digits) }}.
-      </span>
       <span v-else-if="status === 'error'" class="warn">
-        Could not save that just now. Your review is unaffected, carry on below.
+        Could not save that just now.
+        <button class="again" type="button" @click="retry">Try again</button>
+        Your review is unaffected either way.
       </span>
       <span v-else-if="looksWrong" class="warn">That is not a 10-digit mobile number.</span>
       <span v-else-if="phoneOk && !consent">Tick the box and it saves itself.</span>
@@ -170,6 +191,15 @@ onBeforeUnmount(() => clearTimeout(timer))
 }
 
 .gift svg { width: 20px; height: 20px; }
+
+.label {
+  display: block;
+  margin-top: var(--sp-4);
+  font-size: var(--t-caption);
+  font-weight: 600;
+}
+
+.label + .field { margin-top: var(--sp-2); }
 
 .body {
   margin-top: var(--sp-2);
@@ -284,4 +314,18 @@ onBeforeUnmount(() => clearTimeout(timer))
 }
 
 .saved-line strong { color: var(--ink); }
+
+.another, .again {
+  font-size: var(--t-caption);
+  font-weight: 600;
+  color: var(--gold-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.another { margin-top: var(--sp-1); }
+
+.another:hover, .again:hover { color: var(--ink); }
+
+.saved-body { display: flex; flex-direction: column; align-items: flex-start; }
 </style>

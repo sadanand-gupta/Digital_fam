@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { CONSOLE_URL } from '../data/admin'
 import { useAdminSession, type Signup } from '../composables/useAdminSession'
 import StarRating from './StarRating.vue'
 
-const emit = defineEmits<{ close: [] }>()
+const emit = defineEmits<{ close: []; signout: [] }>()
 
 const { signups, loadSignups } = useAdminSession()
 
@@ -28,7 +29,17 @@ async function refresh() {
   }
 }
 
-onMounted(refresh)
+/* Escape is how a full-screen panel is expected to close. */
+function onKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') emit('close')
+}
+
+onMounted(() => {
+  refresh()
+  window.addEventListener('keydown', onKey)
+})
+
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 const rows = computed(() => {
   const q = query.value.replace(/\D/g, '')
@@ -76,6 +87,13 @@ async function copy(s: Signup) {
         </div>
 
         <div class="tools">
+          <!-- Sign out and the raw console lived on the welcome screen that
+               used to sit in front of this. They belong here instead. -->
+          <a class="ghost" :href="CONSOLE_URL" target="_blank" rel="noopener noreferrer">
+            Console
+          </a>
+          <button class="ghost" type="button" @click="emit('signout')">Sign out</button>
+
           <button class="icon" type="button" aria-label="Refresh" @click="refresh">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 12a9 9 0 11-2.6-6.4M21 3v6h-6" />
@@ -226,6 +244,27 @@ async function copy(s: Signup) {
 
 .icon:hover { background: var(--bg-elev); color: var(--ink); border-color: var(--line-2); }
 .icon svg { width: 16px; height: 16px; }
+
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--t-caption);
+  font-weight: 600;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease),
+              border-color 0.18s var(--ease);
+}
+
+.ghost:hover { background: var(--bg-elev); color: var(--ink); border-color: var(--line-2); }
+
+/* The two words are the first thing to go when the bar runs out of room. */
+@media (max-width: 560px) {
+  .ghost { display: none; }
+}
 
 .body { padding-block: var(--sp-5) var(--sp-8); }
 

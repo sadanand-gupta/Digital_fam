@@ -132,5 +132,23 @@ export function useOfferSignup() {
     if (status.value !== 'saved') status.value = 'idle'
   }
 
-  return { status, savedPhone, submit, reset }
+  /**
+   * Forgets this device's signup so somebody else can use the form.
+   *
+   * Matters more than it sounds: a review page reached by a QR code on the
+   * counter gets opened on the same phone or tablet by one customer after
+   * another. Without this, the first person to leave a number is the last.
+   * The record already written stays where it is.
+   */
+  const clear = () => {
+    savedPhone.value = null
+    status.value = 'idle'
+    try {
+      localStorage.removeItem(KEY)
+    } catch {
+      /* Storage unavailable — the in-memory value is already cleared. */
+    }
+  }
+
+  return { status, savedPhone, submit, reset, clear }
 }

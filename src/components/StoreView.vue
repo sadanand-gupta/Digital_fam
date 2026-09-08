@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import type { Store, Review } from '../types'
 import { bestReviewTarget } from '../data/mapsLinks'
 import { useUsedReviews } from '../composables/useUsedReviews'
+import { useOfferSignup } from '../composables/useOfferSignup'
 import StarPicker from './StarPicker.vue'
 import ReviewCard from './ReviewCard.vue'
 import OfferSignup from './OfferSignup.vue'
@@ -40,6 +41,14 @@ const pool = computed(() => {
 /** Every review for this star level has been used up on this device. */
 const exhausted = computed(() => stars.value !== null && pool.value.length === 0)
 
+/**
+ * Someone already on the list has nothing to fill in, so the offer step is
+ * skipped for them entirely — Add review goes straight to Google, the way it
+ * did before any of this existed. Making a returning customer tap twice to
+ * read "you are already signed up" is a step that buys nobody anything.
+ */
+const { savedPhone } = useOfferSignup()
+
 /** True once Add review has been pressed and the offer is showing. */
 const offerOpen = ref(false)
 const offer = ref<InstanceType<typeof OfferSignup> | null>(null)
@@ -51,9 +60,12 @@ watch(stars, () => {
   offerOpen.value = false
 })
 
-/* Picking a different card puts them back at the Add review press. */
+/* Picking a different card puts them back at the Add review press — and
+ * clears the hand-off, or the previous card's "Copied" would stand over a
+ * review this visitor has not copied. */
 watch(selected, () => {
   offerOpen.value = false
+  handedOff.value = false
 })
 
 /**
@@ -161,8 +173,20 @@ function restoreAll() {
       -->
       <section v-if="selected" class="step cta">
         <div class="container">
+          <a
+            v-if="savedPhone"
+            class="btn btn-primary add"
+            :href="target.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            @click="onAdd"
+          >
+            <GoogleMapsIcon :size="18" />
+            Add review
+          </a>
+
           <button
-            v-if="!offerOpen"
+            v-else-if="!offerOpen"
             class="btn btn-primary add"
             type="button"
             @click="offerOpen = true"
@@ -196,14 +220,15 @@ function restoreAll() {
               </a>
             </div>
 
-            <p v-if="handedOff" class="done" role="status">
-              Copied. Paste it into the box Google opened — then post.
-            </p>
-            <p v-else class="hint">
-              Copies the review and opens
-              {{ target.direct ? 'the Google review box' : 'the Google listing' }}.
-            </p>
           </template>
+
+          <p v-if="handedOff" class="done" role="status">
+            Copied. Paste it into the box Google opened — then post.
+          </p>
+          <p v-else class="hint">
+            Copies the review and opens
+            {{ target.direct ? 'the Google review box' : 'the Google listing' }}.
+          </p>
         </div>
       </section>
     </template>
