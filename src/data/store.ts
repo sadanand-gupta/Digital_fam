@@ -16,7 +16,7 @@ export const store: Store = {
   tagline: 'Crispy fried chicken, burgers and shawarma in MMDA Colony',
   address:
     'No.p2, MMDA Main Road, near Post Office, Annish Nagar, Q Block, MMDA Colony, Arumbakkam, Chennai, Tamil Nadu 600106',
-  phone: '+91 90876 18120',
+  phone: '+91 78240 51456',
   hours: 'Dine-in · Takeaway',
   rating: 4.3,
   reviewCount: 17,

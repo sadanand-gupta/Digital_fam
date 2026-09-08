@@ -91,8 +91,8 @@ export const chickatoReviews: Review[] = [...five, ...four, ...three]
  * pick what went wrong, type a line, leave a number, done in twenty seconds.
  */
 export const REPORT_ISSUE = {
-  heading: 'Sorry, that is not how it should have gone.',
-  body: 'Tell the owner what happened. It lands on his phone directly, not in a queue, and he comes back to you himself.',
+  heading: 'Sorry if the food or the service let you down.',
+  body: 'Tell us what went wrong. It goes straight to the owner, not into a queue, and he comes back to you himself.',
   /**
    * Quick-pick chips. They exist so an annoyed customer can report something
    * useful without composing a sentence, and so the owner gets a category he
@@ -108,15 +108,15 @@ export const REPORT_ISSUE = {
     'Something else',
   ],
   /** Owner's WhatsApp. Every report is handed to this chat. */
-  whatsapp: '+919087618120',
+  whatsapp: '+917824051456',
   /** Same line, for anyone who would rather just call. */
-  phone: '+919087618120',
-  phoneLabel: '+91 90876 18120',
+  phone: '+917824051456',
+  phoneLabel: '+91 78240 51456',
 }
 
 /*
  * PARKED — not yet enabled. These name items confirmed only at the Mylapore
- * outlet. Ring +91 90876 18120, confirm MMDA actually sells them, then paste
+ * outlet. Ring +91 78240 51456, confirm MMDA actually sells them, then paste
  * the ones that check out into the arrays above.
  *
  * Kept as a comment rather than an unused export so the text does not ship in

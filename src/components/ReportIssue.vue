@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type { Store } from '../types'
 import { REPORT_ISSUE } from '../data/chickatoReviews'
 import { useIssueReport, type IssueReport } from '../composables/useIssueReport'
+import StarRating from './StarRating.vue'
 
 const props = defineProps<{ store: Store; stars: number }>()
 
@@ -126,19 +127,25 @@ const when = computed(() => {
 </script>
 
 <template>
+  <!--
+    One card, built to the same spec as the review cards in the carousel above
+    it — same border, radius, width and padding. A low rating should not drop
+    the visitor onto a different-looking page; it should just be the one card
+    that happens to be theirs.
+  -->
+
   <!-- Filed: shown the moment they send, and again if they come back. -->
-  <div v-if="report" class="panel card">
+  <div v-if="report" class="one">
     <span class="seal" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 6L9 17l-5-5" />
       </svg>
     </span>
 
-    <p class="eyebrow">Reported</p>
-    <h2 class="title">The owner has your report.</h2>
+    <h2 class="title">Reported. We are on it.</h2>
     <p class="lead">
-      Press send in the WhatsApp chat that just opened and it is on his phone. None of this
-      is posted anywhere public.
+      Press send in the WhatsApp chat that just opened and it is on the owner's phone.
+      Nothing here is posted anywhere public.
     </p>
 
     <p class="refline">
@@ -153,41 +160,43 @@ const when = computed(() => {
           </svg>
         </span>
         <span class="body">
-          <strong>Written up and handed to WhatsApp.</strong>
-          A copy is kept on this device under {{ report.ref }}.
+          <strong>Written up and sent.</strong>
+          A copy stays on this device under {{ report.ref }}.
         </span>
       </li>
       <li>
         <span class="mark" aria-hidden="true">2</span>
         <span class="body">
           <strong>The owner reads it himself.</strong>
-          No call centre and no ticket queue sitting in between.
+          No call centre, no ticket queue in between.
         </span>
       </li>
       <li>
         <span class="mark" aria-hidden="true">3</span>
         <span class="body">
-          <strong>He comes back on {{ pretty(report.phone) }}.</strong>
+          <strong>He replies on {{ pretty(report.phone) }}.</strong>
           You hear what actually changed, not just an apology.
         </span>
       </li>
     </ol>
 
-    <div class="actions">
-      <a class="btn btn-primary" :href="waUrl(report)" target="_blank" rel="noopener noreferrer">
-        Open WhatsApp again
-      </a>
-      <a class="btn btn-ghost" :href="`tel:${REPORT_ISSUE.phone}`">
-        Call {{ REPORT_ISSUE.phoneLabel }}
-      </a>
-    </div>
+    <a class="btn btn-primary send" :href="waUrl(report)" target="_blank" rel="noopener noreferrer">
+      Open WhatsApp again
+    </a>
 
-    <button class="quiet" type="button" @click="startOver">Report something else</button>
+    <div class="foot">
+      <button class="quiet" type="button" @click="startOver">Report something else</button>
+      <a class="quiet" :href="`tel:${REPORT_ISSUE.phone}`">Call {{ REPORT_ISSUE.phoneLabel }}</a>
+    </div>
   </div>
 
-  <!-- The form. Twenty seconds of work, no account, no app. -->
-  <div v-else class="panel card">
-    <p class="eyebrow">We are listening</p>
+  <!-- The card itself. Twenty seconds of work, no account, no app. -->
+  <div v-else class="one">
+    <header class="head">
+      <StarRating :rating="stars" :size="15" />
+      <span class="ratenote">Your rating</span>
+    </header>
+
     <h2 class="title">{{ REPORT_ISSUE.heading }}</h2>
     <p class="lead">{{ REPORT_ISSUE.body }}</p>
 
@@ -249,11 +258,22 @@ const when = computed(() => {
         <span v-if="tried && !phoneOk" class="bad-text">
           Enter the 10-digit mobile your WhatsApp is on.
         </span>
-        <span v-else>
-          So the owner can come back to you once it is sorted. Never shown publicly.
-        </span>
+        <span v-else>So the owner can come back to you once it is sorted. Never shown publicly.</span>
       </p>
     </div>
+
+    <!--
+      The promise is the whole reason this card exists. Someone who believes it
+      will be fixed does not need to go and say it louder on Google.
+    -->
+    <p class="promise">
+      <span class="tick" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </span>
+      We will fix this, and we will tell you what changed. You have our word.
+    </p>
 
     <a
       class="btn btn-primary send"
@@ -268,56 +288,63 @@ const when = computed(() => {
       Report the issue
     </a>
 
-    <p class="fine">
-      Goes straight to the owner on WhatsApp. It is not posted anywhere public.
-    </p>
-
-    <a class="quiet" :href="`tel:${REPORT_ISSUE.phone}`">
-      Would rather talk? Call {{ REPORT_ISSUE.phoneLabel }}
-    </a>
+    <div class="foot">
+      <span class="fine">Goes to the owner only. Never posted publicly.</span>
+      <a class="quiet" :href="`tel:${REPORT_ISSUE.phone}`">Call {{ REPORT_ISSUE.phoneLabel }}</a>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.panel {
-  padding: var(--sp-6) var(--sp-5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--sp-3);
+/*
+ * Border, radius, padding and width all match ReviewCard — this is the same
+ * object as the cards in the carousel, holding a form instead of a review.
+ */
+.one {
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+  text-align: left;
+
+  padding: var(--sp-5);
+  background: var(--bg-elev);
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
 }
 
-.eyebrow {
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.ratenote {
   font-size: var(--t-eyebrow);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   font-weight: 600;
-  color: var(--gold-ink);
+  color: var(--ink-3);
 }
 
 .title {
   font-family: var(--font-display);
   font-size: var(--t-h3);
-  line-height: 1.25;
-  max-width: 24ch;
+  line-height: 1.3;
 }
 
 .lead {
+  margin-top: var(--sp-2);
   color: var(--ink-2);
-  font-size: var(--t-body);
-  max-width: 46ch;
+  font-size: var(--t-meta);
+  line-height: 1.6;
 }
 
-/* ---------- Form blocks ----------
- * The panel centres its headings; the fields inside are left-aligned, because
- * a centred label above a full-width input has nothing to line up with.
- */
+/* ---------- Form blocks ---------- */
 .block {
   width: 100%;
-  max-width: 460px;
-  margin-top: var(--sp-3);
-  text-align: left;
+  margin-top: var(--sp-5);
   border: none;
   padding: 0;
 }
@@ -345,7 +372,7 @@ const when = computed(() => {
 
 .count { font-variant-numeric: tabular-nums; }
 
-/* Gold-ink rather than red: this panel is already an apology, and a red field
+/* Gold-ink rather than red: this card is already an apology, and a red field
  * on top of it reads as the visitor having done something wrong. */
 .bad-text { color: var(--gold-ink); font-weight: 600; }
 
@@ -357,7 +384,7 @@ const when = computed(() => {
 }
 
 .chip {
-  padding: 9px 15px;
+  padding: 8px 14px;
   border-radius: 999px;
   border: 1.5px solid var(--line);
   background: var(--bg-sunken);
@@ -398,7 +425,7 @@ const when = computed(() => {
   font-size: var(--t-body);
   line-height: 1.6;
   resize: vertical;
-  min-height: 108px;
+  min-height: 104px;
 }
 
 /* The ring on .field is the focus indicator for both controls. */
@@ -426,31 +453,68 @@ const when = computed(() => {
 .phone input {
   flex: 1;
   min-width: 0;
-  padding: 14px var(--sp-4);
+  padding: 13px var(--sp-4);
   border: none;
   background: none;
   font-size: var(--t-body);
   letter-spacing: 0.04em;
 }
 
+/* ---------- The promise ---------- */
+.promise {
+  margin-top: var(--sp-5);
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: var(--sp-3);
+  align-items: start;
+
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: 12px;
+  /* Gold wash rather than a border, so it reads as a note and not a warning. */
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+  font-size: var(--t-caption);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.tick {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--gold-ink);
+  color: var(--on-fill);
+}
+
+.tick svg { width: 11px; height: 11px; }
+
 /* ---------- Send ---------- */
 .send {
-  margin-top: var(--sp-5);
-  min-width: min(320px, 100%);
-  padding-block: 15px;
+  margin-top: var(--sp-4);
+  width: 100%;
+  padding-block: 14px;
   font-size: var(--t-body);
 }
 
 .wa { width: 18px; height: 18px; }
 
+.foot {
+  margin-top: var(--sp-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+}
+
 .fine {
   font-size: var(--t-caption);
   color: var(--ink-3);
-  max-width: 40ch;
 }
 
 .quiet {
-  margin-top: var(--sp-2);
   font-size: var(--t-caption);
   font-weight: 600;
   color: var(--ink-2);
@@ -464,16 +528,16 @@ const when = computed(() => {
 .seal {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   background: var(--brand);
   color: var(--on-fill);
-  margin-bottom: var(--sp-1);
+  margin-bottom: var(--sp-3);
   animation: pop 0.42s var(--ease) both;
 }
 
-.seal svg { width: 24px; height: 24px; }
+.seal svg { width: 21px; height: 21px; }
 
 @keyframes pop {
   from { transform: scale(0.5); opacity: 0; }
@@ -481,6 +545,7 @@ const when = computed(() => {
 }
 
 .refline {
+  margin-top: var(--sp-3);
   font-size: var(--t-caption);
   color: var(--ink-3);
   letter-spacing: 0.04em;
@@ -498,18 +563,16 @@ const when = computed(() => {
  */
 .flow {
   width: 100%;
-  max-width: 460px;
   margin-top: var(--sp-4);
   padding: 0;
   list-style: none;
   display: grid;
   gap: var(--sp-4);
-  text-align: left;
 }
 
 .flow li {
   display: grid;
-  grid-template-columns: 26px 1fr;
+  grid-template-columns: 24px 1fr;
   gap: var(--sp-3);
   align-items: start;
 }
@@ -517,8 +580,8 @@ const when = computed(() => {
 .mark {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
   border: 1.5px solid var(--line-2);
   color: var(--ink-3);
@@ -532,7 +595,7 @@ const when = computed(() => {
   color: var(--on-fill);
 }
 
-.mark svg { width: 13px; height: 13px; }
+.mark svg { width: 12px; height: 12px; }
 
 .flow .body {
   font-size: var(--t-caption);
@@ -545,14 +608,6 @@ const when = computed(() => {
   font-size: var(--t-meta);
   color: var(--ink);
   font-weight: 600;
-}
-
-.actions {
-  margin-top: var(--sp-5);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--sp-3);
 }
 
 @media (prefers-reduced-motion: reduce) {
