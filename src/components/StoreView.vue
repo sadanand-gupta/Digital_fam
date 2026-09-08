@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { Store, Review } from '../types'
-import { TELL_OWNER } from '../data/chickatoReviews'
 import { bestReviewTarget } from '../data/mapsLinks'
 import { useUsedReviews } from '../composables/useUsedReviews'
 import StarPicker from './StarPicker.vue'
+import ReportIssue from './ReportIssue.vue'
 import ReviewCard from './ReviewCard.vue'
 import StarRating from './StarRating.vue'
 import GoogleMapsIcon from './GoogleMapsIcon.vue'
@@ -22,7 +22,7 @@ const selected = ref<Review | null>(null)
 /** True once this visitor has sent one off to Maps, so we can say thanks. */
 const handedOff = ref(false)
 
-/** 1 and 2 stars have no review text on purpose — see TELL_OWNER. */
+/** 1 and 2 stars have no review text on purpose — see REPORT_ISSUE. */
 const isNegative = computed(() => stars.value !== null && stars.value <= 2)
 
 /** Prefers Google's review composer, falls back to the plain listing. */
@@ -101,16 +101,14 @@ function restoreAll() {
       </div>
     </section>
 
-    <!-- 3a — One or two stars: no ready-made text, talk to the owner instead. -->
+    <!--
+      3a - One or two stars: no ready-made text. They get a report form that
+      reaches the owner and promises them an answer back, which is the only
+      thing that beats going to Google angry.
+    -->
     <section v-if="isNegative" class="step">
       <div class="container">
-        <div class="owner card">
-          <h2 class="owner-title">{{ TELL_OWNER.heading }}</h2>
-          <p class="owner-body">{{ TELL_OWNER.body }}</p>
-          <a class="btn btn-primary" :href="`tel:${TELL_OWNER.phone}`">
-            {{ TELL_OWNER.ctaLabel }} · {{ TELL_OWNER.phoneLabel }}
-          </a>
-        </div>
+        <ReportIssue :store="store" :stars="stars as number" />
       </div>
     </section>
 
@@ -291,7 +289,7 @@ function restoreAll() {
   color: var(--ok);
 }
 
-/* ---------- Owner / exhausted panels ---------- */
+/* ---------- Exhausted panel ---------- */
 .owner {
   text-align: center;
   padding: var(--sp-6) var(--sp-5);

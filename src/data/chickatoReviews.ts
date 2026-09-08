@@ -61,7 +61,7 @@ const four: Review[] = [
 
 /* ---------------------------------------------------------------- 3 stars */
 /* Fair and constructive, never damning. Someone who genuinely had a bad
- * visit should write their own words — see TELL_OWNER below. */
+ * visit should write their own words — see REPORT_ISSUE below. */
 const three: Review[] = [
   r("Chicken was good but felt a bit oily that day. Might have just been my batch. Taste was there though and the guy at the counter was friendly.", 3),
   r("Food was fine, nothing wrong with it. Waited around fifteen minutes which felt long for a takeaway order. Would give it another go on a quieter day.", 3),
@@ -77,20 +77,41 @@ export const chickatoReviews: Review[] = [...five, ...four, ...three]
  *
  * The shop pays for this page. Handing their unhappy customer ready-made
  * one-star reviews would manufacture the exact damage they hired us to undo.
- * StoreView shows this instead and routes them to the owner directly.
+ * StoreView shows the report form instead and routes them to the owner.
  *
  * Known trade-off, recorded so nobody rediscovers it as a surprise: sending
  * unhappy visitors to the owner while sending happy ones to Google is *review
  * gating*, which Google's Maps policy prohibits, and templated text is what
  * their duplicate filter looks for. Retiring used reviews (useUsedReviews.ts)
  * is the defence on the second point; the first is a business decision.
+ *
+ * A bare "call the owner" button was the first version of this and almost
+ * nobody pressed it — a phone call is a bigger ask than a bad meal is worth.
+ * The form below asks for the same thing in the shape people already use:
+ * pick what went wrong, type a line, leave a number, done in twenty seconds.
  */
-export const TELL_OWNER = {
-  heading: 'Sorry it was not right today.',
-  body: 'We would rather hear this directly than read it later. Tell the shop what went wrong and they will sort it out for you.',
+export const REPORT_ISSUE = {
+  heading: 'Sorry, that is not how it should have gone.',
+  body: 'Tell the owner what happened. It lands on his phone directly, not in a queue, and he comes back to you himself.',
+  /**
+   * Quick-pick chips. They exist so an annoyed customer can report something
+   * useful without composing a sentence, and so the owner gets a category he
+   * can actually act on. Keep the list short — a long one gets skipped.
+   */
+  topics: [
+    'Food quality',
+    'Long wait',
+    'Wrong order',
+    'Staff behaviour',
+    'Cleanliness',
+    'Price',
+    'Something else',
+  ],
+  /** Owner's WhatsApp. Every report is handed to this chat. */
+  whatsapp: '+919087618120',
+  /** Same line, for anyone who would rather just call. */
   phone: '+919087618120',
   phoneLabel: '+91 90876 18120',
-  ctaLabel: 'Tell the owner',
 }
 
 /*

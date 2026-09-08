@@ -6,7 +6,8 @@
  * and has been dropped along with the unrendered `tags`.
  *
  * Nothing below 3 exists on purpose. Someone who had a genuinely bad visit
- * should write their own words — see TELL_OWNER in data/chickatoReviews.ts.
+ * should write their own words and report it to the owner directly — see
+ * REPORT_ISSUE in data/chickatoReviews.ts and components/ReportIssue.vue.
  */
 export interface Review {
   id: string
