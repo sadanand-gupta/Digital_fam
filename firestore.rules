@@ -9,12 +9,13 @@ rules_version = '2';
  * in the JavaScript bundle where anyone can read it. That is fine and expected
  * — the key only names the project. THESE RULES ARE THE ONLY LOCK ON THE DATA.
  *
- * Which means the single most important line in this file is `allow read: if
- * false`. The customer list is the whole asset: leave reads open and anybody
- * who opens devtools can download every number the shop has ever collected,
- * and hand it to the shop next door. Read the list from the Firebase console,
- * a server with the Admin SDK, or an authenticated dashboard — never from the
- * public page.
+ * READ IS CURRENTLY OPEN. See the note on `allow read` below: the admin gate
+ * is a frontend check, so the signup list can be fetched by anyone who finds
+ * the URL. That is a chosen trade-off for a login-free admin view, and it is
+ * the first thing to revisit if this ever holds a list worth stealing.
+ *
+ * Writes stay locked to the exact shape the page sends, so the collection
+ * cannot be filled with junk that somebody later pays to message.
  *
  * Paste into Firestore -> Rules -> Publish.
  */
@@ -52,8 +53,28 @@ service cloud.firestore {
      */
     match /signups/{phone} {
 
-      // The page writes and never reads. Nothing else is anyone's business.
-      allow read, delete: if false;
+      /*
+       * Read is open, and that is a deliberate trade, not an oversight.
+       *
+       * The admin gate is checked in the browser, so there is no token for
+       * Firestore to verify — nothing distinguishes the shop's own admin from
+       * any other visitor. Showing the list inside the page therefore means
+       * allowing anyone who finds this URL to fetch it.
+       *
+       * Accepted knowingly so the admin view needs no login setup. To close it
+       * later: turn on Firebase Authentication, create one admin user, and
+       * make this line read
+       *
+       *   allow read: if request.auth != null
+       *               && request.auth.token.email == 'admin@example.com';
+       *
+       * That check runs on Google's servers, out of the visitor's reach, which
+       * is the only place an access check ever really holds.
+       */
+      allow read: if true;
+
+      // Nothing deletes from the public app. Use the console.
+      allow delete: if false;
 
       allow create: if isValid(request.resource.data)
                     && phone == request.resource.data.phone;

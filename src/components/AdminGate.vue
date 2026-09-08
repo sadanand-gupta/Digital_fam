@@ -1,0 +1,447 @@
+<script setup lang="ts">
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { ADMIN, CONSOLE_URL, SUPER_ADMIN } from '../data/admin'
+import { useAdminSession } from '../composables/useAdminSession'
+import AdminSignups from './AdminSignups.vue'
+
+type Stage = 'form' | 'checking' | 'in' | 'denied'
+
+/** Long enough to read as "it checked", short enough not to feel broken. */
+const CHECK_MS = 800
+
+const open = ref(false)
+const listOpen = ref(false)
+const stage = ref<Stage>('form')
+const username = ref('')
+const password = ref('')
+const reveal = ref(false)
+
+const user = ref<HTMLInputElement | null>(null)
+let timer: ReturnType<typeof setTimeout> | undefined
+
+const { signedIn, signIn, signOut: endSession } = useAdminSession()
+
+/* A refresh mid-session should not throw the admin back to the form. */
+if (signedIn.value) stage.value = 'in'
+
+/**
+ * Checks the typed credentials against data/admin.ts.
+ *
+ * There is nothing to wait for — the comparison is instant — but a result that
+ * lands on the same frame as the click reads as a form that ignored you, so
+ * the spinner is held for a beat on purpose.
+ */
+function submit() {
+  if (!username.value.trim() || !password.value) return
+
+  stage.value = 'checking'
+  clearTimeout(timer)
+
+  timer = setTimeout(() => {
+    try {
+      signIn(username.value, password.value)
+      password.value = ''
+      stage.value = 'in'
+    } catch {
+      stage.value = 'denied'
+    }
+  }, CHECK_MS)
+}
+
+function retry() {
+  stage.value = 'form'
+  password.value = ''
+  reveal.value = false
+  nextTick(() => user.value?.focus())
+}
+
+function signOut() {
+  endSession()
+  listOpen.value = false
+  stage.value = 'form'
+  username.value = ''
+  password.value = ''
+}
+
+function close() {
+  open.value = false
+  if (stage.value === 'checking' || stage.value === 'denied') retry()
+}
+
+function onKey(e: KeyboardEvent) {
+  if (e.key === 'Escape' && !listOpen.value) close()
+}
+
+/* The page behind a modal must not scroll, or the modal drifts on a phone. */
+watch(open, isOpen => {
+  document.body.style.overflow = isOpen ? 'hidden' : ''
+  if (isOpen) {
+    window.addEventListener('keydown', onKey)
+    if (stage.value === 'form') nextTick(() => user.value?.focus())
+  } else {
+    window.removeEventListener('keydown', onKey)
+  }
+})
+
+onBeforeUnmount(() => {
+  clearTimeout(timer)
+  window.removeEventListener('keydown', onKey)
+  document.body.style.overflow = ''
+})
+</script>
+
+<template>
+  <button class="trigger" type="button" @click="open = true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="4" y="10" width="16" height="10" rx="2" />
+      <path d="M8 10V7a4 4 0 018 0v3" />
+    </svg>
+    Admin
+  </button>
+
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="open" class="backdrop" @click.self="close">
+        <div
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ag-title"
+        >
+          <button class="x" type="button" aria-label="Close" @click="close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+
+          <!-- Signed in -->
+          <template v-if="stage === 'in'">
+            <span class="seal ok-seal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <h2 id="ag-title" class="title">Welcome back</h2>
+            <p class="sub">
+              Signed in as <strong>{{ ADMIN.username }}</strong>. You have access until this
+              tab is closed.
+            </p>
+
+            <button class="btn btn-primary wide" type="button" @click="listOpen = true">
+              View signups
+            </button>
+            <a class="console" :href="CONSOLE_URL" target="_blank" rel="noopener noreferrer">
+              Open in Firebase console
+            </a>
+            <button class="link" type="button" @click="signOut">Sign out</button>
+          </template>
+
+          <!-- Checking -->
+          <template v-else-if="stage === 'checking'">
+            <span class="spinner" aria-hidden="true" />
+            <h2 id="ag-title" class="title">Checking your details</h2>
+            <p class="sub" role="status">One moment.</p>
+          </template>
+
+          <!-- Rejected -->
+          <template v-else-if="stage === 'denied'">
+            <span class="seal deny-seal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 8v5M12 16.5v.5" />
+                <circle cx="12" cy="12" r="9" />
+              </svg>
+            </span>
+            <h2 id="ag-title" class="title">That did not match</h2>
+            <p class="sub" role="alert">
+              Please contact the super admin to get your access sorted.
+            </p>
+
+            <a
+              class="btn btn-primary wide"
+              :href="`https://wa.me/91${SUPER_ADMIN.whatsapp}`"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp {{ SUPER_ADMIN.label }}
+            </a>
+            <button class="link" type="button" @click="retry">Try again</button>
+          </template>
+
+          <!-- The form -->
+          <template v-else>
+            <span class="seal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="10" width="16" height="10" rx="2" />
+                <path d="M8 10V7a4 4 0 018 0v3" />
+              </svg>
+            </span>
+            <h2 id="ag-title" class="title">Admin sign in</h2>
+            <p class="sub">For the shop team. Customers do not need this.</p>
+
+            <form class="form" @submit.prevent="submit">
+              <label class="label" for="ag-user">Username</label>
+              <div class="field">
+                <input
+                  id="ag-user"
+                  ref="user"
+                  v-model="username"
+                  type="text"
+                  autocomplete="username"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  placeholder="Enter username"
+                />
+              </div>
+
+              <label class="label" for="ag-pass">Password</label>
+              <div class="field pass">
+                <input
+                  id="ag-pass"
+                  v-model="password"
+                  :type="reveal ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  placeholder="Enter password"
+                />
+                <button
+                  class="peek"
+                  type="button"
+                  :aria-label="reveal ? 'Hide password' : 'Show password'"
+                  @click="reveal = !reveal"
+                >
+                  {{ reveal ? 'Hide' : 'Show' }}
+                </button>
+              </div>
+
+              <button
+                class="btn btn-primary wide submit"
+                type="submit"
+                :disabled="!username.trim() || !password"
+              >
+                Submit
+              </button>
+            </form>
+          </template>
+        </div>
+      </div>
+    </Transition>
+
+    <AdminSignups v-if="listOpen" @close="listOpen = false" />
+  </Teleport>
+</template>
+
+<style scoped>
+/* ---------- Trigger ---------- */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-3);
+  font-size: var(--t-caption);
+  font-weight: 600;
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease),
+              background 0.18s var(--ease);
+}
+
+.trigger:hover {
+  color: var(--ink);
+  border-color: var(--line-2);
+  background: var(--bg-elev);
+}
+
+.trigger svg { width: 14px; height: 14px; }
+
+/* ---------- Shell ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-5);
+  background: color-mix(in srgb, var(--c-navy) 55%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  padding: var(--sp-6) var(--sp-5) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-2);
+
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.x {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  color: var(--ink-3);
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.x:hover { background: var(--bg-sunken); color: var(--ink); }
+.x svg { width: 15px; height: 15px; }
+
+/* ---------- Heading block ---------- */
+.seal {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+  color: var(--gold-ink);
+  margin-bottom: var(--sp-2);
+}
+
+.seal svg { width: 21px; height: 21px; }
+
+.ok-seal {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-fill);
+}
+
+.deny-seal { color: var(--gold-ink); }
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  line-height: 1.25;
+}
+
+.sub {
+  font-size: var(--t-caption);
+  color: var(--ink-3);
+  line-height: 1.55;
+  max-width: 30ch;
+}
+
+.sub strong { color: var(--ink); }
+
+/* ---------- Form ---------- */
+.form {
+  width: 100%;
+  margin-top: var(--sp-4);
+  text-align: left;
+}
+
+.label {
+  display: block;
+  font-size: var(--t-caption);
+  font-weight: 600;
+  margin-bottom: var(--sp-2);
+}
+
+.label + .field { margin-bottom: var(--sp-4); }
+
+.field {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  background: var(--bg-sunken);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+
+.field:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
+}
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px var(--sp-4);
+  border: none;
+  background: none;
+  font-size: var(--t-body);
+}
+
+.field input:focus { outline: none; }
+.field input::placeholder { color: var(--ink-3); }
+
+.peek {
+  padding: 0 var(--sp-4);
+  font-size: var(--t-caption);
+  font-weight: 600;
+  color: var(--ink-3);
+  border-left: 1.5px solid var(--line);
+}
+
+.peek:hover { color: var(--ink); }
+
+.submit { margin-top: var(--sp-2); }
+
+.wide { width: 100%; margin-top: var(--sp-4); }
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.link {
+  margin-top: var(--sp-3);
+  font-size: var(--t-caption);
+  font-weight: 600;
+  color: var(--ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link:hover { color: var(--ink); }
+
+.console {
+  margin-top: var(--sp-3);
+  font-size: var(--t-caption);
+  font-weight: 600;
+  color: var(--gold-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Spinner ---------- */
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--sp-2);
+  border-radius: 999px;
+  border: 3px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-top-color: var(--brand);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Entrance ---------- */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s var(--ease); }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.fade-enter-active .modal { transition: transform 0.24s var(--ease); }
+.fade-enter-from .modal { transform: translateY(10px) scale(0.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 1.6s; }
+  .fade-enter-active .modal, .fade-enter-from .modal { transition: none; transform: none; }
+}
+</style>

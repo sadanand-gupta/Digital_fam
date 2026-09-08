@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import logo from '../assets/logo.png'
 
 const scrolled = ref(false)
 const dark = ref(false)
@@ -32,12 +33,14 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     <div class="container inner">
       <!-- One shop, one page — the mark is identity, not a link. -->
       <div class="brand">
-        <span class="logo" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3 2 9.4l7-.9z" />
-          </svg>
-        </span>
-        <span class="wordmark">Digital<em>Fam</em></span>
+        <img
+          class="logo"
+          :src="logo"
+          alt="GrowUB — Digital Growth for Businesses"
+          width="280"
+          height="104"
+          decoding="async"
+        />
       </div>
 
       <nav class="nav">
@@ -88,30 +91,27 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-3);
 }
 
+/*
+ * The artwork is light-on-black with the background baked into the PNG, so it
+ * cannot simply sit on the ivory page. It gets its own near-black plate
+ * instead — #000206 is sampled from the file's own corner, so the plate and
+ * the image meet with no visible seam and the mark reads as a deliberate
+ * badge rather than a stray black rectangle.
+ *
+ * Swap this for a transparent PNG or an SVG and the plate can go.
+ */
 .logo {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  color: var(--on-fill);
-  background: var(--brand);
-}
-
-.wordmark {
-  font-family: var(--font-display);
-  font-size: 1.18rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.wordmark em {
-  font-style: normal;
-  font-weight: 500;
-  color: var(--ink-3);
+  display: block;
+  height: 34px;
+  width: auto;
+  padding: 5px 10px;
+  border-radius: 9px;
+  background: #000206;
+  /* Against the dark theme's navy ground the plate would vanish into it, so a
+   * hairline keeps the mark's edge readable in both themes. */
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .nav {

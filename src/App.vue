@@ -5,6 +5,7 @@ import { useClipboard } from './composables/useClipboard'
 import SiteHeader from './components/SiteHeader.vue'
 import StoreView from './components/StoreView.vue'
 import CopyToast from './components/CopyToast.vue'
+import AdminGate from './components/AdminGate.vue'
 
 const { copy, copiedId } = useClipboard()
 
@@ -38,6 +39,9 @@ const year = new Date().getFullYear()
         Reviews are templates meant to be edited to match your real experience.
       </p>
       <p class="fine">© {{ year }} Digital Fam</p>
+
+      <!-- Staff door. Deliberately the quietest thing on the page. -->
+      <AdminGate />
     </div>
   </footer>
 
