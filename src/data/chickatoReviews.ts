@@ -60,8 +60,8 @@ const four: Review[] = [
 ]
 
 /* ---------------------------------------------------------------- 3 stars */
-/* Fair and constructive, never damning. Someone who genuinely had a bad
- * visit should write their own words — see REPORT_ISSUE below. */
+/* Fair and constructive. A middling visit with a reason attached, which is
+ * what a real 3 reads like. */
 const three: Review[] = [
   r("Chicken was good but felt a bit oily that day. Might have just been my batch. Taste was there though and the guy at the counter was friendly.", 3),
   r("Food was fine, nothing wrong with it. Waited around fifteen minutes which felt long for a takeaway order. Would give it another go on a quieter day.", 3),
@@ -70,53 +70,34 @@ const three: Review[] = [
   r("Ordered popcorn chicken and it was okay. Pieces were smaller than I expected. Fries were good though so not a wasted trip.", 3),
 ]
 
-export const chickatoReviews: Review[] = [...five, ...four, ...three]
+/* ---------------------------------------------------------------- 2 stars */
+/* One thing was wrong enough to spoil the visit, with one thing still
+ * standing. A 2 that damns everything reads as a grudge, not a review. */
+const two: Review[] = [
+  r("Chicken strips were dry and tasted like they had been sitting a long while. Fries were alright so that is the only reason this is not lower.", 2),
+  r("Small order and it still took twenty minutes on a quiet evening. Food was just okay by the time it came out.", 2),
+  r("Lollipop was raw in the middle for me. Mentioned it at the counter and they heard me out but nothing came of it.", 2),
+  r("Wings had hardly any coating left on them. Tasted plain compared to the last time I ordered the same thing here.", 2),
+  r("Barely any space to stand inside and the queue comes out onto MMDA Main Road. For average food the wait did not feel worth it.", 2),
+]
 
-/**
- * 1 and 2 stars deliberately have no review text.
- *
- * The shop pays for this page. Handing their unhappy customer ready-made
- * one-star reviews would manufacture the exact damage they hired us to undo.
- * StoreView shows the report form instead and routes them to the owner.
- *
- * Known trade-off, recorded so nobody rediscovers it as a surprise: sending
- * unhappy visitors to the owner while sending happy ones to Google is *review
- * gating*, which Google's Maps policy prohibits, and templated text is what
- * their duplicate filter looks for. Retiring used reviews (useUsedReviews.ts)
- * is the defence on the second point; the first is a business decision.
- *
- * A bare "call the owner" button was the first version of this and almost
- * nobody pressed it — a phone call is a bigger ask than a bad meal is worth.
- * The form below asks for the same thing in the shape people already use:
- * pick what went wrong, type a line, leave a number, done in twenty seconds.
- */
-export const REPORT_ISSUE = {
-  heading: 'Sorry if the food or the service let you down.',
-  body: 'Tell us what went wrong. It goes straight to the owner, not into a queue, and he comes back to you himself.',
-  /**
-   * Quick-pick chips. They exist so an annoyed customer can report something
-   * useful without composing a sentence, and so the owner gets a category he
-   * can actually act on. Keep the list short — a long one gets skipped.
-   */
-  topics: [
-    'Food quality',
-    'Long wait',
-    'Wrong order',
-    'Staff behaviour',
-    'Cleanliness',
-    'Price',
-    'Something else',
-  ],
-  /** Owner's WhatsApp. Every report is handed to this chat. */
-  whatsapp: '+917824051456',
-  /** Same line, for anyone who would rather just call. */
-  phone: '+917824051456',
-  phoneLabel: '+91 78240 51456',
-}
+/* ---------------------------------------------------------------- 1 star */
+/* A visit that went wrong, told plainly. One specific failure each, no
+ * pile-on and no name calling, which is also what survives moderation. */
+const one: Review[] = [
+  r("Ordered the zinger burger and it came out cold. Bun had gone soggy by the time I opened the box at home. Not what I expected after the wait.", 1),
+  r("Waited close to thirty minutes for one takeaway order on a normal weekday. Nobody at the counter could say how much longer. Left without it in the end.", 1),
+  r("Chicken was so oily I could not finish even half of it. The paper under it was fully soaked through. Whole box went in the bin.", 1),
+  r("Got somebody else order completely. Asked for shawarma and reached home with popcorn chicken and fries. Nobody checked before handing it over.", 1),
+  r("Went in the evening and the place had not been cleaned at all. Old boxes were lying on the tables the whole time I stood there waiting.", 1),
+]
+
+export const chickatoReviews: Review[] = [...five, ...four, ...three, ...two, ...one]
+
 
 /*
  * PARKED — not yet enabled. These name items confirmed only at the Mylapore
- * outlet. Ring +91 78240 51456, confirm MMDA actually sells them, then paste
+ * outlet. Confirm with the owner that MMDA actually sells them, then paste
  * the ones that check out into the arrays above.
  *
  * Kept as a comment rather than an unused export so the text does not ship in

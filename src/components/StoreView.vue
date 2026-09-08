@@ -4,7 +4,6 @@ import type { Store, Review } from '../types'
 import { bestReviewTarget } from '../data/mapsLinks'
 import { useUsedReviews } from '../composables/useUsedReviews'
 import StarPicker from './StarPicker.vue'
-import ReportIssue from './ReportIssue.vue'
 import ReviewCard from './ReviewCard.vue'
 import StarRating from './StarRating.vue'
 import GoogleMapsIcon from './GoogleMapsIcon.vue'
@@ -22,9 +21,6 @@ const selected = ref<Review | null>(null)
 /** True once this visitor has sent one off to Maps, so we can say thanks. */
 const handedOff = ref(false)
 
-/** 1 and 2 stars have no review text on purpose — see REPORT_ISSUE. */
-const isNegative = computed(() => stars.value !== null && stars.value <= 2)
-
 /** Prefers Google's review composer, falls back to the plain listing. */
 const target = computed(() => bestReviewTarget(props.store))
 
@@ -34,16 +30,14 @@ const target = computed(() => bestReviewTarget(props.store))
  * reviews and getting all ten filtered as spam.
  */
 const pool = computed(() => {
-  if (stars.value === null || isNegative.value) return []
+  if (stars.value === null) return []
   return props.store.reviews
     .filter(r => r.rating === stars.value && !isUsed(r.id))
     .slice(0, PAGE_SIZE)
 })
 
 /** Every review for this star level has been used up on this device. */
-const exhausted = computed(
-  () => stars.value !== null && !isNegative.value && pool.value.length === 0,
-)
+const exhausted = computed(() => stars.value !== null && pool.value.length === 0)
 
 /* Changing the star rating invalidates whatever was picked underneath it. */
 watch(stars, () => {
@@ -101,24 +95,13 @@ function restoreAll() {
       </div>
     </section>
 
-    <!--
-      3a - One or two stars: no ready-made text. They get a report form that
-      reaches the owner and promises them an answer back, which is the only
-      thing that beats going to Google angry.
-    -->
-    <section v-if="isNegative" class="step">
-      <div class="container">
-        <ReportIssue :store="store" :stars="stars as number" />
-      </div>
-    </section>
-
-    <!-- 3b — Three or more: swipe the cards, tap one. -->
-    <template v-else-if="stars !== null">
+    <!-- 3 — Whatever they tapped: swipe that level's cards, tap one. -->
+    <template v-if="stars !== null">
       <section class="step">
         <div v-if="exhausted" class="container">
-          <div class="owner card">
-            <h2 class="owner-title">You have used every {{ stars }}-star review</h2>
-            <p class="owner-body">
+          <div class="spent card">
+            <h2 class="spent-title">You have used every {{ stars }}-star review</h2>
+            <p class="spent-body">
               All of them have been copied on this device. Reset to start over — just reword
               anything you post twice.
             </p>
@@ -187,10 +170,6 @@ function restoreAll() {
           <div>
             <dt>Hours</dt>
             <dd>{{ store.hours }}</dd>
-          </div>
-          <div v-if="store.phone">
-            <dt>Phone</dt>
-            <dd><a :href="`tel:${store.phone.replace(/\s/g, '')}`">{{ store.phone }}</a></dd>
           </div>
         </dl>
       </div>
@@ -289,8 +268,8 @@ function restoreAll() {
   color: var(--ok);
 }
 
-/* ---------- Exhausted panel ---------- */
-.owner {
+/* ---------- Used-up panel ---------- */
+.spent {
   text-align: center;
   padding: var(--sp-6) var(--sp-5);
   display: flex;
@@ -299,9 +278,9 @@ function restoreAll() {
   gap: var(--sp-3);
 }
 
-.owner-title { font-size: var(--t-h3); }
+.spent-title { font-size: var(--t-h3); }
 
-.owner-body {
+.spent-body {
   color: var(--ink-2);
   font-size: var(--t-body);
   max-width: 44ch;
@@ -331,6 +310,6 @@ function restoreAll() {
 }
 
 @media (min-width: 640px) {
-  .info { grid-template-columns: 2fr 1fr 1fr; }
+  .info { grid-template-columns: 2fr 1fr; }
 }
 </style>
