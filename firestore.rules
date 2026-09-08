@@ -1,0 +1,79 @@
+rules_version = '2';
+
+/*
+ * Digital Fam — WhatsApp opt-in collection.
+ *
+ * READ THIS BEFORE CHANGING ANYTHING HERE.
+ *
+ * The review page is public and unauthenticated, and its Firebase apiKey ships
+ * in the JavaScript bundle where anyone can read it. That is fine and expected
+ * — the key only names the project. THESE RULES ARE THE ONLY LOCK ON THE DATA.
+ *
+ * Which means the single most important line in this file is `allow read: if
+ * false`. The customer list is the whole asset: leave reads open and anybody
+ * who opens devtools can download every number the shop has ever collected,
+ * and hand it to the shop next door. Read the list from the Firebase console,
+ * a server with the Admin SDK, or an authenticated dashboard — never from the
+ * public page.
+ *
+ * Paste into Firestore -> Rules -> Publish.
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /*
+     * Shape check. Without this the collection is a free write target for
+     * anything with the apiKey, and junk rows cost real money later — somebody
+     * eventually pays per message to send to them.
+     */
+    function isValid(d) {
+      return d.keys().hasOnly(['phone', 'stars', 'store', 'consent', 'consentText', 'source', 'at'])
+        && d.keys().hasAll(['phone', 'stars', 'store', 'consent', 'consentText', 'at'])
+        && d.phone is string
+        && d.phone.matches('^[6-9][0-9]{9}$')
+        // No consent, no record. This is the field that makes the list lawful.
+        && d.consent == true
+        && d.consentText is string
+        && d.consentText.size() > 0
+        && d.consentText.size() < 500
+        && d.stars is int
+        && d.stars >= 1
+        && d.stars <= 5
+        && d.store is string
+        && d.store.size() < 200
+        && d.at is timestamp;
+    }
+
+
+    /*
+     * One document per phone number, id = the number itself. That is what
+     * makes a repeat signup an update instead of a duplicate the shop would
+     * end up paying to message twice.
+     */
+    match /signups/{phone} {
+
+      // The page writes and never reads. Nothing else is anyone's business.
+      allow read, delete: if false;
+
+      allow create: if isValid(request.resource.data)
+                    && phone == request.resource.data.phone;
+
+      /*
+       * Update is allowed only to refresh an existing record's visit details,
+       * and can never move it to a different number.
+       *
+       * It exists so a returning customer does not get a permission error the
+       * page would have to interpret — a create-only rule answers "this number
+       * is already on the list" with a distinguishable failure, which is a
+       * quiet way of letting someone test numbers against the list.
+       */
+      allow update: if isValid(request.resource.data)
+                    && request.resource.data.phone == resource.data.phone;
+    }
+
+    // Everything else in the project stays shut.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

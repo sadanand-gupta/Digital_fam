@@ -5,6 +5,7 @@ import { bestReviewTarget } from '../data/mapsLinks'
 import { useUsedReviews } from '../composables/useUsedReviews'
 import StarPicker from './StarPicker.vue'
 import ReviewCard from './ReviewCard.vue'
+import OfferSignup from './OfferSignup.vue'
 import StarRating from './StarRating.vue'
 import GoogleMapsIcon from './GoogleMapsIcon.vue'
 
@@ -39,10 +40,20 @@ const pool = computed(() => {
 /** Every review for this star level has been used up on this device. */
 const exhausted = computed(() => stars.value !== null && pool.value.length === 0)
 
+/** True once Add review has been pressed and the offer is showing. */
+const offerOpen = ref(false)
+const offer = ref<InstanceType<typeof OfferSignup> | null>(null)
+
 /* Changing the star rating invalidates whatever was picked underneath it. */
 watch(stars, () => {
   selected.value = null
   handedOff.value = false
+  offerOpen.value = false
+})
+
+/* Picking a different card puts them back at the Add review press. */
+watch(selected, () => {
+  offerOpen.value = false
 })
 
 /**
@@ -62,6 +73,12 @@ function onAdd() {
   emit('copy', rv)
   markUsed(rv.id)
   handedOff.value = true
+}
+
+/** Same hand-off, but it throws away a number that has not saved yet. */
+function onSkip() {
+  offer.value?.cancel()
+  onAdd()
 }
 
 /** Puts every review for this store back into circulation on this device. */
@@ -134,27 +151,59 @@ function restoreAll() {
         </template>
       </section>
 
-      <!-- 4 — One button: copies, then opens Google. -->
+      <!--
+        4 — Add review, in two stages.
+
+        Stage one opens the offer; stage two copies and hands off to Google.
+        The number saves itself on a timer inside OfferSignup, but the copy and
+        the new tab cannot: a browser only allows those inside the tap that
+        asked for them, so Continue stays a real press on a real <a>.
+      -->
       <section v-if="selected" class="step cta">
         <div class="container">
-          <a
+          <button
+            v-if="!offerOpen"
             class="btn btn-primary add"
-            :href="target.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            @click="onAdd"
+            type="button"
+            @click="offerOpen = true"
           >
             <GoogleMapsIcon :size="18" />
             Add review
-          </a>
+          </button>
 
-          <p v-if="handedOff" class="done" role="status">
-            Copied. Paste it into the box Google opened — then post.
-          </p>
-          <p v-else class="hint">
-            Copies the review and opens
-            {{ target.direct ? 'the Google review box' : 'the Google listing' }}.
-          </p>
+          <template v-else>
+            <OfferSignup ref="offer" :stars="stars ?? 5" :store="store.name" />
+
+            <div class="go">
+              <a
+                class="btn btn-ghost"
+                :href="target.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click="onSkip"
+              >
+                Skip
+              </a>
+              <a
+                class="btn btn-primary add"
+                :href="target.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click="onAdd"
+              >
+                <GoogleMapsIcon :size="18" />
+                Continue
+              </a>
+            </div>
+
+            <p v-if="handedOff" class="done" role="status">
+              Copied. Paste it into the box Google opened — then post.
+            </p>
+            <p v-else class="hint">
+              Copies the review and opens
+              {{ target.direct ? 'the Google review box' : 'the Google listing' }}.
+            </p>
+          </template>
         </div>
       </section>
     </template>
@@ -260,6 +309,17 @@ function restoreAll() {
   padding-block: 15px;
   font-size: var(--t-body);
 }
+
+/* Skip sits beside Continue, not under it: an escape hatch you have to hunt
+ * for is a dark pattern, and this one costs nothing to offer. */
+.go {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+.go .add { min-width: min(220px, 100%); }
 
 .done {
   margin-top: var(--sp-3);
