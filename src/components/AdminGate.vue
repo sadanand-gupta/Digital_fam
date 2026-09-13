@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
 
 <template>
   <button class="trigger" type="button" @click="enter">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <rect x="4" y="10" width="16" height="10" rx="2" />
       <path d="M8 10V7a4 4 0 018 0v3" />
     </svg>
@@ -229,13 +229,13 @@ onBeforeUnmount(() => {
 .trigger {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 36px;
-  padding: 0 14px;
+  gap: 10px;
+  height: 44px;
+  padding: 0 18px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: transparent;
-  color: var(--ink-2);
+  color: var(--c-gold-dim);
   font-size: var(--t-caption);
   font-weight: 600;
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease),
@@ -255,7 +255,7 @@ onBeforeUnmount(() => {
   .trigger .word { display: none; }
 }
 
-.trigger svg { width: 14px; height: 14px; }
+.trigger svg { width: 18px; height: 18px; }
 
 /* ---------- Shell ---------- */
 .backdrop {

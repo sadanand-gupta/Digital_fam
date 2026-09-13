@@ -81,10 +81,12 @@ watch(selected, () => {
  * visitor arrives at Google with nothing to paste.
  */
 function onAdd() {
-  const rv = selected.value
-  if (!rv) return
-  emit('copy', rv)
-  markUsed(rv.id)
+  if (stars.value !== 1) {
+    const rv = selected.value
+    if (!rv) return
+    emit('copy', rv)
+    markUsed(rv.id)
+  }
   handedOff.value = true
 }
 
@@ -106,11 +108,11 @@ function restoreAll() {
     <!-- 1 — Brand, straight away. Nothing above it to scroll past. -->
     <section class="hero">
       <div class="container">
-        <ImageSlider />
-        <h1 class="display name">{{ store.name }}</h1>
-        <p class="tagline">{{ store.tagline }}</p>
+        <div class="staged-1"><ImageSlider /></div>
+        <h1 class="display name staged-2">{{ store.name }}</h1>
+        <p class="tagline staged-3">{{ store.tagline }}</p>
 
-        <div class="rating">
+        <div class="rating staged-3">
           <strong class="score">{{ store.rating.toFixed(1) }}</strong>
           <StarRating :rating="store.rating" :size="15" />
           <span class="count">{{ store.reviewCount }} Google reviews</span>
@@ -119,7 +121,7 @@ function restoreAll() {
     </section>
 
     <!-- 2 — The star row, directly under the name. -->
-    <section class="step">
+    <section class="step staged-4">
       <div class="container">
         <p class="ask">How was your visit?</p>
         <StarPicker v-model="stars" />
@@ -128,7 +130,7 @@ function restoreAll() {
 
     <!-- 3 — Whatever they tapped: swipe that level's cards, tap one. -->
     <template v-if="stars !== null">
-      <section class="step">
+      <section class="step" v-if="stars > 1">
         <div v-if="exhausted" class="container">
           <div class="spent card">
             <h2 class="spent-title">You have used every {{ stars }}-star review</h2>
@@ -173,7 +175,7 @@ function restoreAll() {
         the new tab cannot: a browser only allows those inside the tap that
         asked for them, so Continue stays a real press on a real <a>.
       -->
-      <section v-if="selected" class="step cta">
+      <section v-if="selected || stars === 1" class="step cta">
         <div class="container">
           <a
             v-if="savedPhone"
@@ -225,18 +227,19 @@ function restoreAll() {
           </template>
 
           <p v-if="handedOff" class="done" role="status">
-            Copied. Paste it into the box Google opened — then post.
+            {{ stars === 1 ? 'Opened Google. You can now write your own feedback.' : 'Copied. Paste it into the box Google opened — then post.' }}
           </p>
           <p v-else class="hint">
-            Copies the review and opens
-            {{ target.direct ? 'the Google review box' : 'the Google listing' }}.
+            {{ stars === 1 
+               ? 'Opens the Google review box so you can write your own feedback.'
+               : 'Copies the review and opens ' + (target.direct ? 'the Google review box' : 'the Google listing') + '.' }}
           </p>
         </div>
       </section>
     </template>
 
     <!-- Shop details, kept below the funnel so it reads as a real business page. -->
-    <section class="step details">
+    <section class="step details staged-4">
       <div class="container">
         <dl class="info card">
           <div>
@@ -398,5 +401,33 @@ function restoreAll() {
 
 @media (min-width: 640px) {
   .info { grid-template-columns: 2fr 1fr; }
+}
+
+/* ---------- Staged Entrance ---------- */
+@keyframes fade-scale-in {
+  0% { opacity: 0; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-up-fade {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.staged-1 {
+  animation: fade-scale-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: 0s;
+}
+.staged-2 {
+  animation: slide-up-fade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: 0.2s;
+}
+.staged-3 {
+  animation: slide-up-fade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: 0.4s;
+}
+.staged-4 {
+  animation: slide-up-fade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: 0.6s;
 }
 </style>

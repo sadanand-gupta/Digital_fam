@@ -39,6 +39,14 @@ function onKey(e: KeyboardEvent, n: number) {
 
 <template>
   <div class="picker">
+    <svg width="0" height="0" style="position: absolute;" aria-hidden="true">
+      <defs>
+        <linearGradient id="luxury-star" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="var(--c-gold-hover)" />
+          <stop offset="100%" stop-color="var(--c-gold-dim)" />
+        </linearGradient>
+      </defs>
+    </svg>
     <div
       class="row"
       role="radiogroup"
@@ -48,6 +56,7 @@ function onKey(e: KeyboardEvent, n: number) {
       <button
         v-for="n in 5"
         :key="n"
+        :style="{ '--index': n }"
         :ref="el => { if (el) buttons[n - 1] = el as HTMLButtonElement }"
         class="star"
         :class="{ lit: n <= lit, picked: n === modelValue }"
@@ -99,7 +108,7 @@ function onKey(e: KeyboardEvent, n: number) {
   /* 48px minimum touch target, per WCAG 2.5.5. */
   padding: var(--sp-2);
   border-radius: var(--radius-sm, 10px);
-  transition: transform 0.16s var(--ease);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -111,16 +120,26 @@ function onKey(e: KeyboardEvent, n: number) {
 .star path {
   fill: var(--star-empty);
   stroke: var(--star-empty-edge);
-  transition: fill 0.18s var(--ease), stroke 0.18s var(--ease);
+  transition: fill 0.3s var(--ease), stroke 0.3s var(--ease);
+  transition-delay: calc(var(--index) * 40ms);
 }
 
 .star.lit path {
-  fill: var(--star);
+  fill: url(#luxury-star);
   stroke: var(--star-edge);
 }
 
+@keyframes pulse-glow {
+  0% { filter: drop-shadow(0 0 0 rgba(201,168,104, 0)); }
+  50% { filter: drop-shadow(0 0 12px rgba(201,168,104, 0.8)); }
+  100% { filter: drop-shadow(0 0 4px rgba(201,168,104, 0.3)); }
+}
+
 /* A small lift on the star actually chosen, so the selection survives a glance. */
-.star.picked { transform: scale(1.12); }
+.star.picked { 
+  transform: scale(1.15);
+  animation: pulse-glow 0.4s ease-out forwards;
+}
 
 .star:active { transform: scale(0.94); }
 

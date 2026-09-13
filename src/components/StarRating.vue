@@ -29,15 +29,19 @@ const fills = computed(() =>
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
-      <defs v-if="fill > 0 && fill < 1">
-        <linearGradient :id="`h-${uid}-${i}`" x1="0" x2="1" y1="0" y2="0">
+      <defs>
+        <linearGradient :id="`g-${uid}`" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="var(--c-gold-hover)" />
+          <stop offset="100%" stop-color="var(--c-gold-dim)" />
+        </linearGradient>
+        <linearGradient v-if="fill > 0 && fill < 1" :id="`h-${uid}-${i}`" x1="0" x2="1" y1="0" y2="0">
           <stop :offset="fill" stop-color="var(--star)" />
           <stop :offset="fill" stop-color="var(--star-empty)" />
         </linearGradient>
       </defs>
       <path
         d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3 2 9.4l7-.9z"
-        :fill="fill === 1 ? 'var(--star)' : fill === 0 ? 'var(--star-empty)' : `url(#h-${uid}-${i})`"
+        :fill="fill === 1 ? `url(#g-${uid})` : fill === 0 ? 'var(--star-empty)' : `url(#h-${uid}-${i})`"
         :stroke="fill > 0 ? 'var(--star-edge)' : 'var(--star-empty-edge)'"
         stroke-width="1.1"
         stroke-linejoin="round"

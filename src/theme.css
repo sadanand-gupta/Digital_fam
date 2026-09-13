@@ -1,50 +1,41 @@
 /*
  * THEME — every colour, space and type step in the app lives here.
  * ---------------------------------------------------------------------------
- * Premium Orange & Black scheme:
- *   Vivid Orange    #FF6A00  primary accent: main buttons, eyebrows, active states
- *   Premium Teal    #14B8A6  secondary accent: ghost buttons, links, subtle highlights
- *   Jet Black       #0A0A0A  page background
- *   Onyx            #141414  cards and raised surfaces
- *   Charcoal        #1C1C1C  sunken / secondary surfaces
+ * Ultra-Premium Luxury scheme:
+ *   Champagne Gold  #C9A868  primary accent: main buttons, eyebrows, active states
+ *   Jet Black       #0A0A0A  page background (gradient to #141414)
+ *   Glass Panels    rgba     cards and raised surfaces with backdrop-blur
  *   White           #FFFFFF  primary text
  *   Silver          #B0B0B0  secondary text
  *   Slate           #707070  tertiary / muted text
- *
- * The single constraint: orange-on-black gives 5.2:1 contrast — well above
- * 4.5:1 for normal text. White-on-black is 21:1. Both clear WCAG AA easily.
  */
 
 :root {
   /* ---------- RAW PALETTE — edit these to restyle the site ---------- */
 
-  /* Vivid Orange — accent / brand. */
-  --c-orange: #ff6a00;
-  --c-orange-hover: #ff8c33;
-  --c-orange-dim: #cc5500;
+  /* Champagne Gold — accent / brand. */
+  --c-gold: #c9a868;
+  --c-gold-hover: #d8b87a;
+  --c-gold-dim: #b89856;
 
   /* The same hue darkened, for readable small text on dark surfaces. */
-  --c-orange-ink: #ff6a00;
-
-  /* Premium Teal — secondary accent for ghost buttons, links, secondary actions. */
-  --c-teal: #14b8a6;
-  --c-teal-hover: #2dd4bf;
-  --c-teal-dim: #0d9488;
+  --c-gold-ink: #c9a868;
 
   /*
-   * Star amber — orange-tinted to sit inside this palette rather than the
+   * Star amber — gold-tinted to sit inside this palette rather than the
    * standard Google yellow. Still reads instantly as a star rating.
    */
-  --c-star: #ff8c33;
-  --c-star-edge: #cc5500;
+  --c-star: #c9a868;
+  --c-star-edge: #b89856;
 
   /* Jet Black ground, Onyx cards. */
   --c-bg: #0a0a0a;
-  --c-bg-deep: #060606;
+  --c-bg-deep: #141414;
 
-  --c-surface: #141414;
-  --c-sunken: #111111;
-  --c-border: rgba(255, 255, 255, 0.08);
+  /* Glassmorphic Surfaces */
+  --c-surface: rgba(255, 255, 255, 0.02);
+  --c-sunken: rgba(0, 0, 0, 0.2);
+  --c-border: rgba(201, 168, 104, 0.15); /* Gold-tinted border */
 
   /* Text hierarchy — white to grey. */
   --c-text: #ffffff;
@@ -55,14 +46,14 @@
   --c-shadow-rgb: 0, 0, 0;
 
   /* ---------- SPACING — one scale, used everywhere ---------- */
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 24px;
-  --sp-6: 32px;
-  --sp-7: 48px;
-  --sp-8: 64px;
+  --sp-1: 5px;
+  --sp-2: 10px;
+  --sp-3: 16px;
+  --sp-4: 20px;
+  --sp-5: 32px;
+  --sp-6: 42px;
+  --sp-7: 64px;
+  --sp-8: 84px;
 
   /* ---------- TYPE SCALE ---------- */
   --t-eyebrow: 0.7rem;
@@ -78,39 +69,38 @@
   --bg-gradient: linear-gradient(170deg, var(--c-bg) 0%, var(--c-bg) 40%, var(--c-bg-deep) 100%);
   --bg-elev: var(--c-surface);
   --bg-sunken: var(--c-sunken);
-  --surface-glass: rgba(14, 14, 14, 0.88);
+  --surface-glass: rgba(14, 14, 14, 0.4);
 
   --ink: var(--c-text);
   --ink-2: var(--c-text-2);
   --ink-3: var(--c-text-3);
 
   --line: var(--c-border);
-  --line-2: rgba(255, 255, 255, 0.14);
+  --line-2: rgba(201, 168, 104, 0.25);
 
-  --brand: var(--c-orange);
-  --brand-2: var(--c-orange-hover);
+  --brand: var(--c-gold);
+  --brand-2: var(--c-gold-hover);
 
-  /* 'gold' slot is now orange. */
-  --gold: var(--c-orange);
-  --gold-ink: var(--c-orange);
+  --gold: var(--c-gold);
+  --gold-ink: var(--c-gold);
 
   --star: var(--c-star);
   --star-edge: var(--c-star-edge);
-  --star-empty: rgba(255, 255, 255, 0.12);
-  --star-empty-edge: rgba(255, 255, 255, 0.3);
+  --star-empty: transparent;
+  --star-empty-edge: var(--c-gold);
 
-  --ok: var(--c-orange);
+  --ok: var(--c-gold);
 
-  /* Teal accent — secondary interactive colour. */
-  --teal: var(--c-teal);
-  --teal-2: var(--c-teal-hover);
+  /* Single accent color means we map teal variables to gold as well */
+  --teal: var(--c-gold);
+  --teal-2: var(--c-gold-hover);
 
-  --on-fill: #ffffff;
+  --on-fill: #000000;
 
-  /* Shadows on a dark surface are subtle — deeper blacks. */
-  --shadow-sm: 0 1px 2px rgba(var(--c-shadow-rgb), 0.5);
-  --shadow: 0 1px 2px rgba(var(--c-shadow-rgb), 0.5), 0 4px 16px rgba(var(--c-shadow-rgb), 0.4);
-  --shadow-lg: 0 2px 4px rgba(var(--c-shadow-rgb), 0.55), 0 12px 36px rgba(var(--c-shadow-rgb), 0.5);
+  /* Shadows on a dark surface are subtle — deeper blacks with gold-tinted inner glow */
+  --shadow-sm: inset 0 1px 0 rgba(201, 168, 104, 0.05), 0 1px 2px rgba(var(--c-shadow-rgb), 0.5);
+  --shadow: inset 0 1px 0 rgba(201, 168, 104, 0.05), 0 1px 2px rgba(var(--c-shadow-rgb), 0.5), 0 4px 16px rgba(var(--c-shadow-rgb), 0.4);
+  --shadow-lg: inset 0 1px 0 rgba(201, 168, 104, 0.05), 0 2px 4px rgba(var(--c-shadow-rgb), 0.55), 0 12px 36px rgba(var(--c-shadow-rgb), 0.5);
 }
 
 /*
@@ -122,34 +112,34 @@
   --bg-gradient: linear-gradient(170deg, var(--c-bg) 0%, var(--c-bg) 40%, var(--c-bg-deep) 100%);
   --bg-elev: var(--c-surface);
   --bg-sunken: var(--c-sunken);
-  --surface-glass: rgba(14, 14, 14, 0.88);
+  --surface-glass: rgba(14, 14, 14, 0.4);
 
   --ink: var(--c-text);
   --ink-2: var(--c-text-2);
   --ink-3: var(--c-text-3);
 
   --line: var(--c-border);
-  --line-2: rgba(255, 255, 255, 0.14);
+  --line-2: rgba(201, 168, 104, 0.25);
 
-  --brand: var(--c-orange);
-  --brand-2: var(--c-orange-hover);
+  --brand: var(--c-gold);
+  --brand-2: var(--c-gold-hover);
 
-  --gold: var(--c-orange);
-  --gold-ink: var(--c-orange);
+  --gold: var(--c-gold);
+  --gold-ink: var(--c-gold);
 
   --star: var(--c-star);
   --star-edge: var(--c-star-edge);
-  --star-empty: rgba(255, 255, 255, 0.12);
-  --star-empty-edge: rgba(255, 255, 255, 0.3);
+  --star-empty: transparent;
+  --star-empty-edge: var(--c-gold);
 
-  --ok: var(--c-orange);
+  --ok: var(--c-gold);
 
-  --teal: var(--c-teal);
-  --teal-2: var(--c-teal-hover);
+  --teal: var(--c-gold);
+  --teal-2: var(--c-gold-hover);
 
-  --on-fill: #ffffff;
+  --on-fill: #000000;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.55), 0 12px 36px rgba(0, 0, 0, 0.5);
+  --shadow-sm: inset 0 1px 0 rgba(201, 168, 104, 0.05), 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow: inset 0 1px 0 rgba(201, 168, 104, 0.05), 0 1px 2px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: inset 0 1px 0 rgba(201, 168, 104, 0.05), 0 2px 4px rgba(0, 0, 0, 0.55), 0 12px 36px rgba(0, 0, 0, 0.5);
 }

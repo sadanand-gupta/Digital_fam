@@ -1,24 +1,34 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const slides = [
-  { src: '/images/growub (1).webp', alt: 'Chickato Crispy Fried Chicken' },
-  { src: '/images/growub (2).avif', alt: 'Chickato Crispy Fried Chicken' },
-  { src: '/images/growub (5).avif', alt: 'Chickato Crispy Fried Chicken' },
-  { src: '/images/growub (1).avif', alt: 'Chickato Crispy Fried Chicken' },
-  { src: '/images/growub (1).jpg', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup1.png', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup2.png', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup3.png', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup4.png', alt: 'Chickato Crispy Fried Chicken' },
 ]
 
 const current = ref(0)
 const paused = ref(false)
 let timer: ReturnType<typeof setInterval> | undefined
 
+const SLIDE_DURATION = 3000
+
 function startAuto() {
   clearInterval(timer)
   timer = setInterval(() => {
     if (!paused.value) next()
-  }, 4000)
+  }, SLIDE_DURATION)
 }
+
+// Watch paused state to pause/resume the timer
+watch(paused, (isPaused) => {
+  if (isPaused) {
+    clearInterval(timer)
+  } else {
+    startAuto()
+  }
+})
 
 function goTo(i: number) {
   current.value = i
@@ -27,36 +37,6 @@ function goTo(i: number) {
 
 function next() { goTo((current.value + 1) % slides.length) }
 function prev() { goTo((current.value - 1 + slides.length) % slides.length) }
-
-// Calculate shortest path offset for smooth looping
-function getOffset(i: number) {
-  const n = slides.length
-  let diff = i - current.value
-  
-  if (diff < -Math.floor(n / 2)) diff += n
-  if (diff > Math.floor(n / 2)) diff -= n
-  
-  return diff
-}
-
-function getStyle(i: number) {
-  const offset = getOffset(i)
-  const absOffset = Math.abs(offset)
-  
-  // 3D Orbit transformations
-  const translateX = offset * 50 // Move left/right by 50% of card width
-  const translateZ = absOffset * -160 // Push side cards back in 3D space
-  const rotateY = offset * -35 // Rotate side cards inward
-  const scale = 1 - (absOffset * 0.05) // Slightly scale down the far back items
-  const opacity = absOffset > 2 ? 0 : 1 // Show up to 5 items (offset -2 to +2)
-  const zIndex = 10 - absOffset
-  
-  return {
-    transform: `translateX(${translateX}%) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
-    zIndex,
-    opacity,
-  }
-}
 
 onMounted(startAuto)
 onBeforeUnmount(() => clearInterval(timer))
@@ -67,20 +47,22 @@ onBeforeUnmount(() => clearInterval(timer))
     class="slider"
     @mouseenter="paused = true"
     @mouseleave="paused = false"
+    @touchstart="paused = true"
+    @touchend="paused = false"
   >
-    <!-- 3D Viewport -->
+    <div class="glow" aria-hidden="true"></div>
+    
     <div class="viewport">
-      <div class="orbit">
-        <div
-          v-for="(s, i) in slides"
-          :key="i"
-          class="slide"
-          :style="getStyle(i)"
-          @click="goTo(i)"
-        >
-          <img :src="s.src" :alt="s.alt" loading="lazy" decoding="async" />
-        </div>
+      <div
+        v-for="(s, i) in slides"
+        :key="i"
+        class="slide"
+        :class="{ active: i === current }"
+      >
+        <img :src="s.src" :alt="s.alt" loading="lazy" decoding="async" />
       </div>
+
+
 
       <!-- Prev / Next arrows -->
       <button class="arrow left" type="button" aria-label="Previous image" @click.stop="prev">
@@ -95,88 +77,87 @@ onBeforeUnmount(() => clearInterval(timer))
       </button>
     </div>
 
-    <!-- Dot indicators -->
-    <div class="dots" role="tablist" aria-label="Image slider">
-      <button
-        v-for="(_, i) in slides"
-        :key="i"
-        class="dot"
-        :class="{ on: i === current }"
-        type="button"
-        role="tab"
-        :aria-selected="i === current"
-        :aria-label="`Image ${i + 1} of ${slides.length}`"
-        @click="goTo(i)"
-      />
+    <!-- Gold Progress Line -->
+    <div class="progress-bar">
+      <div 
+        class="progress-fill" 
+        :key="current" 
+        :style="{ animationPlayState: paused ? 'paused' : 'running' }"
+      ></div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .slider {
+  position: relative;
   width: 100%;
-  max-width: 800px; /* Slightly wider to accommodate 3D side cards */
+  max-width: 800px;
   margin: 0 auto var(--sp-5);
-  overflow: visible; /* Let the side cards bleed out nicely */
+  overflow: visible;
+}
+
+.glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(201, 168, 104, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .viewport {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Perspective gives the 3D depth effect */
+  overflow: visible;
   perspective: 1200px;
-}
-
-.orbit {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transform-style: preserve-3d;
 }
 
 .slide {
   position: absolute;
-  /* The card is smaller than the viewport so side cards fit within the container */
-  width: 55%;
-  height: 85%;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: var(--shadow-lg), 0 20px 40px rgba(0,0,0,0.4);
-  /* Smoothly transition all 3D transforms */
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), 
-              opacity 0.6s var(--ease), 
-              z-index 0.6s step-end;
-  cursor: pointer;
-  background: var(--bg-elev);
+  inset: 0;
+  opacity: 0;
+  /* Entering state: pushed back and slightly rotated */
+  transform: translateZ(-150px) rotateY(15deg) scale(0.95);
+  transition: opacity 0.9s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 1;
+  transform-style: preserve-3d;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateZ(0) rotateY(0) scale(1);
+  z-index: 2;
+}
+
+@keyframes float-3d {
+  0% {
+    transform: translateY(0) rotateX(2deg) rotateY(-2deg);
+    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.6)) drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4)) brightness(1);
+  }
+  50% {
+    transform: translateY(-16px) rotateX(-2deg) rotateY(2deg);
+    filter: drop-shadow(0 35px 35px rgba(0, 0, 0, 0.3)) drop-shadow(0 15px 15px rgba(0, 0, 0, 0.2)) brightness(1.08);
+  }
+  100% {
+    transform: translateY(0) rotateX(2deg) rotateY(-2deg);
+    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.6)) drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4)) brightness(1);
+  }
 }
 
 .slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-}
-
-/* Dim side cards slightly for focus on the center */
-.slide::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: black;
-  opacity: 0;
-  transition: opacity 0.6s var(--ease);
-  pointer-events: none;
-}
-
-.slide[style*="translateZ(-150px)"]::after,
-.slide[style*="translateZ(-300px)"]::after {
-  opacity: 0.4;
+  object-fit: contain;
+  transform-origin: center center;
+  animation: float-3d 8s ease-in-out infinite;
+  /* Ensure images in inactive slides still animate but are ready for transition */
 }
 
 /* ---------- Arrows ---------- */
@@ -188,9 +169,9 @@ onBeforeUnmount(() => clearInterval(timer))
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(201, 168, 104, 0.3);
   color: #fff;
   backdrop-filter: blur(6px);
   opacity: 0;
@@ -203,54 +184,50 @@ onBeforeUnmount(() => clearInterval(timer))
 .viewport:hover .arrow { opacity: 1; }
 
 .arrow:hover {
-  background: var(--c-orange);
-  border-color: var(--c-orange);
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-fill);
 }
 
 .arrow:active { transform: translateY(-50%) scale(0.93); }
 
-/* Moved arrows outside slightly so they don't cover the central card too much */
-.left { left: 0px; }
-.right { right: 0px; }
+.left { left: 12px; }
+.right { right: 12px; }
 
-/* ---------- Dots ---------- */
-.dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: var(--sp-4);
+/* ---------- Progress Line ---------- */
+.progress-bar {
+  position: absolute;
+  bottom: -16px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  padding: 0;
-  transition: background 0.25s var(--ease), transform 0.25s var(--ease), width 0.25s var(--ease);
-  cursor: pointer;
+@keyframes progress-fill-anim {
+  from { width: 0%; }
+  to { width: 100%; }
 }
 
-.dot.on {
-  background: var(--c-orange);
-  width: 26px;
-  box-shadow: 0 0 8px rgba(255, 106, 0, 0.45);
+.progress-fill {
+  height: 100%;
+  background: var(--c-gold);
+  width: 0%;
+  animation: progress-fill-anim 3s linear forwards;
 }
-
-.dot:hover:not(.on) { background: var(--teal); }
 
 @media (max-width: 640px) {
-  .slider { max-width: 100%; overflow: hidden; }
-  .viewport { border-radius: 14px; aspect-ratio: 1/1; perspective: 800px; }
-  .slide { width: 65%; height: 80%; }
+  .viewport { border-radius: 14px; aspect-ratio: 1/1; }
   .arrow { width: 36px; height: 36px; }
   .arrow svg { width: 18px; height: 18px; }
-  .left { left: 5px; }
-  .right { right: 5px; }
+  .left { left: 8px; }
+  .right { right: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .slide { transition-duration: 0.01ms; }
+  .slide img { animation: none; transform: none; filter: none; }
+  .progress-fill { animation: none; width: 100%; }
 }
 </style>
