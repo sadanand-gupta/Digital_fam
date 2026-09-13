@@ -18,7 +18,7 @@ function apply(isDark: boolean) {
   // query cannot do it — the theme here is a toggle, not an OS preference.
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', '#14b8a6')
+    ?.setAttribute('content', '#0a0a0a')
 
   try { localStorage.setItem('df-theme', isDark ? 'dark' : 'light') } catch { /* private mode */ }
 }
