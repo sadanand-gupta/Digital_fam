@@ -219,7 +219,7 @@ async function copy(s: Signup) {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-weight: 600;
-  color: var(--gold-ink);
+  color: var(--teal);
 }
 
 .title {
@@ -315,8 +315,8 @@ async function copy(s: Signup) {
 }
 
 .field:focus-within {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 14%, transparent);
 }
 
 .field svg { flex: none; width: 16px; height: 16px; }
@@ -434,7 +434,7 @@ async function copy(s: Signup) {
   transition: background 0.18s var(--ease), color 0.18s var(--ease);
 }
 
-.copy:hover { background: var(--brand); border-color: var(--brand); color: var(--on-fill); }
+.copy:hover { background: var(--teal); border-color: var(--teal); color: var(--on-fill); }
 
 .foot {
   margin-top: var(--sp-5);

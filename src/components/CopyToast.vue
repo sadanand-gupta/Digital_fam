@@ -52,7 +52,7 @@ defineProps<{ show: boolean }>()
   height: 30px;
   border-radius: 50%;
   color: var(--on-fill);
-  background: var(--ok);
+  background: var(--teal);
 }
 
 .body {

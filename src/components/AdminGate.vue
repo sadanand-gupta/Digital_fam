@@ -265,7 +265,7 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   padding: var(--sp-5);
-  background: color-mix(in srgb, var(--c-navy) 55%, transparent);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(3px);
 }
 
@@ -311,14 +311,14 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   background: var(--bg-sunken);
   border: 1px solid var(--line);
-  color: var(--gold-ink);
+  color: var(--teal);
   margin-bottom: var(--sp-2);
 }
 
 .seal svg { width: 21px; height: 21px; }
 
 
-.deny-seal { color: var(--gold-ink); }
+.deny-seal { color: var(--c-orange); }
 
 .title {
   font-family: var(--font-display);
@@ -362,8 +362,8 @@ onBeforeUnmount(() => {
 }
 
 .field:focus-within {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 14%, transparent);
 }
 
 .field input {
@@ -402,12 +402,12 @@ onBeforeUnmount(() => {
   margin-top: var(--sp-3);
   font-size: var(--t-caption);
   font-weight: 600;
-  color: var(--ink-3);
+  color: var(--teal);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-.link:hover { color: var(--ink); }
+.link:hover { color: var(--teal-2); }
 
 
 /* ---------- Spinner ---------- */

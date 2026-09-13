@@ -9,6 +9,7 @@ import ReviewCard from './ReviewCard.vue'
 import OfferSignup from './OfferSignup.vue'
 import StarRating from './StarRating.vue'
 import GoogleMapsIcon from './GoogleMapsIcon.vue'
+import ImageSlider from './ImageSlider.vue'
 
 const props = defineProps<{ store: Store; copiedId: string | null }>()
 const emit = defineEmits<{ copy: [review: Review] }>()
@@ -105,6 +106,7 @@ function restoreAll() {
     <!-- 1 — Brand, straight away. Nothing above it to scroll past. -->
     <section class="hero">
       <div class="container">
+        <ImageSlider />
         <h1 class="display name">{{ store.name }}</h1>
         <p class="tagline">{{ store.tagline }}</p>
 
@@ -271,7 +273,7 @@ function restoreAll() {
 
 .tagline {
   margin-top: var(--sp-2);
-  color: var(--ink-2);
+  color: var(--teal);
   font-size: var(--t-body);
 }
 
@@ -287,7 +289,7 @@ function restoreAll() {
 .score { font-size: var(--t-h3); }
 
 .count {
-  color: var(--ink-3);
+  color: var(--teal);
   font-size: var(--t-meta);
 }
 
@@ -384,7 +386,7 @@ function restoreAll() {
   font-size: var(--t-eyebrow);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--gold-ink);
+  color: var(--teal);
   margin-bottom: var(--sp-1);
 }
 

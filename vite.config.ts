@@ -8,5 +8,9 @@ export default defineConfig({
     // Listen on all interfaces so the dev server is reachable from phones and
     // other devices on the same network, not just localhost.
     host: true,
+    watch: {
+      // Ignore media files that Windows may lock, crashing the file watcher.
+      ignored: ['**/images/**', '**/*.mp4', '**/*.webp', '**/*.avi', '**/*.mov'],
+    },
   },
 })

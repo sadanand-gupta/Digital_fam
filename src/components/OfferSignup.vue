@@ -162,7 +162,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   border-radius: 18px;
   /* Dashed and washed rather than a solid card: this is an aside on the way
    * past, and it must not compete with the review cards above it. */
-  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  background: color-mix(in srgb, var(--c-orange) 6%, transparent);
 }
 
 .eyebrow {
@@ -170,7 +170,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-weight: 600;
-  color: var(--gold-ink);
+  color: var(--teal);
 }
 
 .headline {
@@ -219,8 +219,8 @@ onBeforeUnmount(() => clearTimeout(timer))
 }
 
 .field:focus-within {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 14%, transparent);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 14%, transparent);
 }
 
 .field.bad { border-color: var(--gold-ink); }
@@ -274,7 +274,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   width: 18px;
   height: 18px;
   margin: 2px 0 0;
-  accent-color: var(--brand);
+  accent-color: var(--teal);
   cursor: pointer;
 }
 
@@ -301,7 +301,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   width: 30px;
   height: 30px;
   border-radius: 999px;
-  background: var(--brand);
+  background: var(--teal);
   color: var(--on-fill);
 }
 
@@ -318,14 +318,14 @@ onBeforeUnmount(() => clearTimeout(timer))
 .another, .again {
   font-size: var(--t-caption);
   font-weight: 600;
-  color: var(--gold-ink);
+  color: var(--teal);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .another { margin-top: var(--sp-1); }
 
-.another:hover, .again:hover { color: var(--ink); }
+.another:hover, .again:hover { color: var(--teal-2); }
 
 .saved-body { display: flex; flex-direction: column; align-items: flex-start; }
 </style>
