@@ -98,7 +98,7 @@ onBeforeUnmount(() => clearInterval(timer))
     <!-- Dot indicators -->
     <div class="dots" role="tablist" aria-label="Image slider">
       <button
-        v-for="(s, i) in slides"
+        v-for="(_, i) in slides"
         :key="i"
         class="dot"
         :class="{ on: i === current }"
