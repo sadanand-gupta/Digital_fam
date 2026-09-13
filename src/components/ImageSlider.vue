@@ -168,7 +168,7 @@ onBeforeUnmount(() => clearInterval(timer))
   content: '';
   position: absolute;
   inset: 0;
-  background: black;
+  background: var(--bg);
   opacity: 0;
   transition: opacity 0.6s var(--ease);
   pointer-events: none;
