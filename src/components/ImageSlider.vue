@@ -36,7 +36,6 @@ function goTo(i: number) {
 }
 
 function next() { goTo((current.value + 1) % slides.length) }
-function prev() { goTo((current.value - 1 + slides.length) % slides.length) }
 
 onMounted(startAuto)
 onBeforeUnmount(() => clearInterval(timer))
@@ -61,20 +60,6 @@ onBeforeUnmount(() => clearInterval(timer))
       >
         <img :src="s.src" :alt="s.alt" loading="lazy" decoding="async" />
       </div>
-
-
-
-      <!-- Prev / Next arrows -->
-      <button class="arrow left" type="button" aria-label="Previous image" @click.stop="prev">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
-      <button class="arrow right" type="button" aria-label="Next image" @click.stop="next">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
     </div>
 
     <!-- Gold Progress Line -->
@@ -92,10 +77,10 @@ onBeforeUnmount(() => clearInterval(timer))
 .slider {
   position: relative;
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto var(--sp-5);
+  max-width: 440px;
+  margin: 0 auto var(--sp-4);
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 16px;
 }
 
 .glow {
@@ -114,86 +99,32 @@ onBeforeUnmount(() => clearInterval(timer))
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  overflow: visible;
-  perspective: 1200px;
-  transform-style: preserve-3d;
+  overflow: hidden;
+  border-radius: 14px;
 }
 
 .slide {
   position: absolute;
   inset: 0;
   opacity: 0;
-  /* Entering state: pushed back and slightly rotated */
-  transform: translateZ(-150px) rotateY(15deg) scale(0.95);
-  transition: opacity 0.9s cubic-bezier(0.25, 1, 0.5, 1),
-              transform 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: scale(0.96);
+  transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+              transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 1;
-  transform-style: preserve-3d;
 }
 
 .slide.active {
   opacity: 1;
-  transform: translateZ(0) rotateY(0) scale(1);
+  transform: scale(1);
   z-index: 2;
-}
-
-@keyframes float-3d {
-  0% {
-    transform: translateY(0) rotateX(2deg) rotateY(-2deg);
-    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.6)) drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4)) brightness(1);
-  }
-  50% {
-    transform: translateY(-16px) rotateX(-2deg) rotateY(2deg);
-    filter: drop-shadow(0 35px 35px rgba(0, 0, 0, 0.3)) drop-shadow(0 15px 15px rgba(0, 0, 0, 0.2)) brightness(1.08);
-  }
-  100% {
-    transform: translateY(0) rotateX(2deg) rotateY(-2deg);
-    filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.6)) drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4)) brightness(1);
-  }
 }
 
 .slide img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  transform-origin: center center;
-  animation: float-3d 8s ease-in-out infinite;
-  /* Ensure images in inactive slides still animate but are ready for transition */
+  object-fit: cover;
+  border-radius: 14px;
 }
-
-/* ---------- Arrows ---------- */
-.arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(201, 168, 104, 0.3);
-  color: #fff;
-  backdrop-filter: blur(6px);
-  opacity: 0;
-  transition: opacity 0.2s var(--ease), background 0.2s var(--ease), transform 0.2s var(--ease);
-  z-index: 20;
-}
-
-.arrow svg { width: 22px; height: 22px; }
-
-.viewport:hover .arrow { opacity: 1; }
-
-.arrow:hover {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: var(--on-fill);
-}
-
-.arrow:active { transform: translateY(-50%) scale(0.93); }
-
-.left { left: 12px; }
-.right { right: 12px; }
 
 /* ---------- Progress Line ---------- */
 .progress-bar {
@@ -220,11 +151,8 @@ onBeforeUnmount(() => clearInterval(timer))
 }
 
 @media (max-width: 640px) {
-  .viewport { border-radius: 14px; aspect-ratio: 1/1; }
-  .arrow { width: 36px; height: 36px; }
-  .arrow svg { width: 18px; height: 18px; }
-  .left { left: 8px; }
-  .right { right: 8px; }
+  .slider { max-width: 340px; }
+  .viewport { border-radius: 12px; aspect-ratio: 16 / 10; }
 }
 
 @media (prefers-reduced-motion: reduce) {

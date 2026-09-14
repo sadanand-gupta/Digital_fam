@@ -42,7 +42,7 @@ const emit = defineEmits<{ select: [review: Review] }>()
   padding-right: 36px;
 
   background: var(--bg-elev);
-  border: 2px solid rgba(37, 211, 102, 0.5);
+  border: 2px solid rgba(201, 168, 104, 0.4);
   border-radius: 14px;
   box-shadow: var(--shadow-sm);
   color: var(--ink);
@@ -52,19 +52,19 @@ const emit = defineEmits<{ select: [review: Review] }>()
 }
 
 .review:hover {
-  border-color: #25d366;
-  box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+  border-color: #c9a868;
+  box-shadow: 0 0 0 2px rgba(201, 168, 104, 0.2);
 }
 
 .review.on {
-  border: 2.5px solid #25d366;
-  box-shadow: 0 0 0 3.5px rgba(37, 211, 102, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 2.5px solid #c9a868;
+  box-shadow: 0 0 0 3.5px rgba(201, 168, 104, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
-  background: rgba(37, 211, 102, 0.08);
+  background: rgba(201, 168, 104, 0.08);
 }
 
 .review:focus-visible {
-  outline: 2px solid #25d366;
+  outline: 2px solid #c9a868;
   outline-offset: 3px;
 }
 
@@ -89,8 +89,8 @@ const emit = defineEmits<{ select: [review: Review] }>()
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  background: #25d366;
-  color: #ffffff;
+  background: #c9a868;
+  color: #000000;
   opacity: 0;
   transform: scale(0.6);
   transition: opacity 0.18s var(--ease), transform 0.18s var(--ease);

@@ -218,12 +218,12 @@ function restoreAll() {
     <!-- Shop details, kept below the funnel so it reads as a real business page. -->
     <section class="step details staged-4">
       <div class="container">
-        <dl class="info card">
-          <div>
+        <dl class="info">
+          <div class="info-item">
             <dt>Address</dt>
             <dd>{{ store.address }}</dd>
           </div>
-          <div>
+          <div class="info-item">
             <dt>Hours</dt>
             <dd>{{ store.hours }}</dd>
           </div>
@@ -325,7 +325,7 @@ function restoreAll() {
   flex-direction: column;
   gap: 10px;
   background: var(--bg-elev, rgba(255, 255, 255, 0.03));
-  border: 2.5px solid #25d366;
+  border: 2.5px solid #c9a868;
   border-radius: 18px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -334,8 +334,8 @@ function restoreAll() {
 }
 
 .custom-box:focus-within {
-  border-color: #25d366;
-  box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.25), 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: #c9a868;
+  box-shadow: 0 0 0 4px rgba(201, 168, 104, 0.25), 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .custom-textarea {
@@ -358,7 +358,7 @@ function restoreAll() {
 
 .custom-hint {
   font-size: var(--t-caption, 0.8rem);
-  color: #25d366;
+  color: #c9a868;
   font-weight: 600;
   line-height: 1.4;
   margin-top: 4px;
@@ -421,27 +421,33 @@ function restoreAll() {
 .details { padding-bottom: var(--sp-8); }
 
 .info {
-  padding: var(--sp-5);
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: var(--sp-4);
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.info-item {
+  width: 100%;
 }
 
 .info dt {
   font-size: var(--t-eyebrow);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--teal);
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--c-gold, #c9a868);
   margin-bottom: var(--sp-1);
 }
 
 .info dd {
-  font-size: var(--t-meta);
+  font-size: var(--t-body);
   color: var(--ink-2);
   line-height: 1.55;
-}
-
-@media (min-width: 640px) {
-  .info { grid-template-columns: 2fr 1fr; }
 }
 
 /* ---------- Staged Entrance ---------- */
