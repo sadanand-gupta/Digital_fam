@@ -2,10 +2,10 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const slides = [
-  { src: '/images/growup1.png', alt: 'Chickato Crispy Fried Chicken' },
-  { src: '/images/growup2.png', alt: 'Chickato Crispy Fried Chicken' },
-  { src: '/images/growup3.png', alt: 'Chickato Crispy Fried Chicken' },
-  { src: '/images/growup4.png', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup1.webp', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup2.webp', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup3.webp', alt: 'Chickato Crispy Fried Chicken' },
+  { src: '/images/growup4.webp', alt: 'Chickato Crispy Fried Chicken' },
 ]
 
 const current = ref(0)
@@ -94,7 +94,8 @@ onBeforeUnmount(() => clearInterval(timer))
   width: 100%;
   max-width: 800px;
   margin: 0 auto var(--sp-5);
-  overflow: visible;
+  overflow: hidden;
+  border-radius: 18px;
 }
 
 .glow {
@@ -102,9 +103,9 @@ onBeforeUnmount(() => clearInterval(timer))
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 150%;
-  height: 150%;
-  background: radial-gradient(circle, rgba(201, 168, 104, 0.12) 0%, transparent 60%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(201, 168, 104, 0.15) 0%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 }

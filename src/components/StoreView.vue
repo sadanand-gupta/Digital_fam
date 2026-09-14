@@ -234,6 +234,12 @@ function restoreAll() {
 </template>
 
 <style scoped>
+.page {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* ---------- Hero ---------- */
 /*
  * The map banner that used to sit above this was removed: it pulled a

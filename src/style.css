@@ -38,15 +38,22 @@ html {
   background-attachment: fixed;
 }
 
-body {
+html, body {
   font-family: var(--font);
-  /* Transparent so the gradient painted on html shows through. */
   background: transparent;
   color: var(--ink);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+#app {
+  width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
 }
 
