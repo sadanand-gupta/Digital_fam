@@ -3,12 +3,10 @@ import { computed, ref, watch } from 'vue'
 import type { Store, Review } from '../types'
 import { bestReviewTarget } from '../data/mapsLinks'
 import { useUsedReviews } from '../composables/useUsedReviews'
-import { useOfferSignup } from '../composables/useOfferSignup'
 import StarPicker from './StarPicker.vue'
 import ReviewCard from './ReviewCard.vue'
 import OfferSignup from './OfferSignup.vue'
 import StarRating from './StarRating.vue'
-import GoogleMapsIcon from './GoogleMapsIcon.vue'
 import ImageSlider from './ImageSlider.vue'
 
 const props = defineProps<{ store: Store; copiedId: string | null }>()
@@ -17,10 +15,11 @@ const emit = defineEmits<{ copy: [review: Review] }>()
 const { isUsed, markUsed, resetMany } = useUsedReviews()
 
 /** How many cards the carousel offers per star level. */
-const PAGE_SIZE = 5
+const PAGE_SIZE = 3
 
 const stars = ref<number | null>(null)
 const selected = ref<Review | null>(null)
+const customReviewText = ref('')
 /** True once this visitor has sent one off to Maps, so we can say thanks. */
 const handedOff = ref(false)
 
@@ -42,30 +41,17 @@ const pool = computed(() => {
 /** Every review for this star level has been used up on this device. */
 const exhausted = computed(() => stars.value !== null && pool.value.length === 0)
 
-/**
- * Someone already on the list has nothing to fill in, so the offer step is
- * skipped for them entirely — Add review goes straight to Google, the way it
- * did before any of this existed. Making a returning customer tap twice to
- * read "you are already signed up" is a step that buys nobody anything.
- */
-const { savedPhone } = useOfferSignup()
-
-/** True once Add review has been pressed and the offer is showing. */
-const offerOpen = ref(false)
 const offer = ref<InstanceType<typeof OfferSignup> | null>(null)
 
 /* Changing the star rating invalidates whatever was picked underneath it. */
 watch(stars, () => {
   selected.value = null
+  customReviewText.value = ''
   handedOff.value = false
-  offerOpen.value = false
 })
 
-/* Picking a different card puts them back at the Add review press — and
- * clears the hand-off, or the previous card's "Copied" would stand over a
- * review this visitor has not copied. */
+/* Picking a different card clears the hand-off */
 watch(selected, () => {
-  offerOpen.value = false
   handedOff.value = false
 })
 
@@ -81,7 +67,15 @@ watch(selected, () => {
  * visitor arrives at Google with nothing to paste.
  */
 function onAdd() {
-  if (stars.value !== 1) {
+  if (stars.value === 1) {
+    if (customReviewText.value.trim()) {
+      emit('copy', {
+        id: 'custom-1star',
+        rating: 1,
+        text: customReviewText.value.trim(),
+      })
+    }
+  } else {
     const rv = selected.value
     if (!rv) return
     emit('copy', rv)
@@ -128,7 +122,7 @@ function restoreAll() {
       </div>
     </section>
 
-    <!-- 3 — Whatever they tapped: swipe that level's cards, tap one. -->
+    <!-- 3 — Whatever they tapped: swipe that level's cards, tap one, or type feedback for 1 star. -->
     <template v-if="stars !== null">
       <section class="step" v-if="stars > 1">
         <div v-if="exhausted" class="container">
@@ -167,6 +161,23 @@ function restoreAll() {
         </template>
       </section>
 
+      <section class="step" v-else-if="stars === 1">
+        <div class="container custom-feedback-container">
+          <p class="ask">Tell us what happened</p>
+          <div class="custom-box">
+            <textarea
+              v-model="customReviewText"
+              class="custom-textarea"
+              placeholder="Type your feedback here based on your experience..."
+              rows="4"
+            ></textarea>
+            <p v-if="customReviewText.trim()" class="custom-hint">
+              Your feedback will be automatically copied to clipboard when you click Add review below.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <!--
         4 — Add review, in two stages.
 
@@ -177,61 +188,27 @@ function restoreAll() {
       -->
       <section v-if="selected || stars === 1" class="step cta">
         <div class="container">
-          <a
-            v-if="savedPhone"
-            class="btn btn-primary add"
-            :href="target.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            @click="onAdd"
-          >
-            <GoogleMapsIcon :size="18" />
-            Add review
-          </a>
-
-          <button
-            v-else-if="!offerOpen"
-            class="btn btn-primary add"
-            type="button"
-            @click="offerOpen = true"
-          >
-            <GoogleMapsIcon :size="18" />
-            Add review
-          </button>
-
-          <template v-else>
-            <OfferSignup ref="offer" :stars="stars ?? 5" :store="store.name" />
-
-            <div class="go">
-              <a
-                class="btn btn-ghost"
-                :href="target.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                @click="onSkip"
-              >
-                Skip
-              </a>
-              <a
-                class="btn btn-primary add"
-                :href="target.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                @click="onAdd"
-              >
-                <GoogleMapsIcon :size="18" />
-                Continue
-              </a>
-            </div>
-
-          </template>
+          <OfferSignup
+            ref="offer"
+            :stars="stars ?? 5"
+            :store="store.name"
+            :target-url="target.url"
+            @skip="onSkip"
+            @add="onAdd"
+          />
 
           <p v-if="handedOff" class="done" role="status">
-            {{ stars === 1 ? 'Opened Google. You can now write your own feedback.' : 'Copied. Paste it into the box Google opened — then post.' }}
+            {{ stars === 1
+               ? (customReviewText.trim()
+                   ? 'Copied. Paste it into the box Google opened — then post.'
+                   : 'Opened Google. You can now write your own feedback.')
+               : 'Copied. Paste it into the box Google opened — then post.' }}
           </p>
           <p v-else class="hint">
-            {{ stars === 1 
-               ? 'Opens the Google review box so you can write your own feedback.'
+            {{ stars === 1
+               ? (customReviewText.trim()
+                   ? 'Copies your feedback and opens ' + (target.direct ? 'the Google review box' : 'the Google listing') + '.'
+                   : 'Opens the Google review box so you can write your own feedback.')
                : 'Copies the review and opens ' + (target.direct ? 'the Google review box' : 'the Google listing') + '.' }}
           </p>
         </div>
@@ -330,6 +307,57 @@ function restoreAll() {
 
 .track::-webkit-scrollbar { display: none; }
 
+/* ---------- 1-Star Custom Feedback Box ---------- */
+.custom-feedback-container {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.custom-box {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-elev, rgba(255, 255, 255, 0.03));
+  border: 2.5px solid #25d366;
+  border-radius: 18px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.custom-box:focus-within {
+  border-color: #25d366;
+  box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.25), 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.custom-textarea {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--ink, #ffffff);
+  font-family: var(--font, sans-serif);
+  font-size: var(--t-body, 0.95rem);
+  line-height: 1.55;
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+}
+
+.custom-textarea::placeholder {
+  color: var(--ink-3, #707070);
+}
+
+.custom-hint {
+  font-size: var(--t-caption, 0.8rem);
+  color: #25d366;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
 /* ---------- Add review ---------- */
 .cta { text-align: center; }
 
@@ -355,7 +383,14 @@ function restoreAll() {
   margin-top: var(--sp-3);
   font-size: var(--t-meta);
   font-weight: 600;
-  color: var(--ok);
+  color: #25d366;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(37, 211, 102, 0.1);
+  border: 1px solid rgba(37, 211, 102, 0.25);
 }
 
 /* ---------- Used-up panel ---------- */

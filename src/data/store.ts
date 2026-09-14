@@ -12,8 +12,8 @@ import { chickatoReviews } from './chickatoReviews'
  *     `ChIJ…` `placeId` is better if you can get one — see mapsLinks.ts.
  */
 export const store: Store = {
-  name: 'Chickato Crispy Fried Chicken MMDA',
-  tagline: 'Crispy fried chicken, burgers and shawarma in MMDA Colony',
+  name: 'Chickato',
+  tagline: 'Crispy Fried Chicken, Burgers & Shawarma · MMDA Colony',
   address:
     'No.p2, MMDA Main Road, near Post Office, Annish Nagar, Q Block, MMDA Colony, Arumbakkam, Chennai, Tamil Nadu 600106',
   hours: 'Dine-in · Takeaway',

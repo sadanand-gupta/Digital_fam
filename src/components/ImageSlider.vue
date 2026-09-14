@@ -12,7 +12,7 @@ const current = ref(0)
 const paused = ref(false)
 let timer: ReturnType<typeof setInterval> | undefined
 
-const SLIDE_DURATION = 3000
+const SLIDE_DURATION = 2000
 
 function startAuto() {
   clearInterval(timer)
@@ -215,7 +215,7 @@ onBeforeUnmount(() => clearInterval(timer))
   height: 100%;
   background: var(--c-gold);
   width: 0%;
-  animation: progress-fill-anim 3s linear forwards;
+  animation: progress-fill-anim 2s linear forwards;
 }
 
 @media (max-width: 640px) {

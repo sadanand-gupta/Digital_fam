@@ -34,16 +34,16 @@ const emit = defineEmits<{ select: [review: Review] }>()
   position: relative;
   /* Each card is one snap stop in the carousel track. */
   scroll-snap-align: center;
-  flex: 0 0 min(86%, 420px);
+  flex: 0 0 min(78%, 310px);
 
   display: flex;
   text-align: left;
-  padding: var(--sp-5);
-  padding-right: var(--sp-6);
+  padding: 16px 20px;
+  padding-right: 36px;
 
   background: var(--bg-elev);
-  border: 1.5px solid var(--line);
-  border-radius: 18px;
+  border: 2px solid rgba(37, 211, 102, 0.5);
+  border-radius: 14px;
   box-shadow: var(--shadow-sm);
   color: var(--ink);
 
@@ -51,22 +51,31 @@ const emit = defineEmits<{ select: [review: Review] }>()
               transform 0.18s var(--ease), background 0.18s var(--ease);
 }
 
-.review:hover { border-color: var(--line-2); }
+.review:hover {
+  border-color: #25d366;
+  box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+}
 
 .review.on {
-  border-color: var(--brand);
-  box-shadow: var(--shadow);
+  border: 2.5px solid #25d366;
+  box-shadow: 0 0 0 3.5px rgba(37, 211, 102, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
+  background: rgba(37, 211, 102, 0.08);
 }
 
 .review:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid #25d366;
   outline-offset: 3px;
 }
 
 .text {
-  font-size: var(--t-body);
-  line-height: 1.65;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Selected state has to survive a glance on a bright phone screen, so it is
@@ -80,8 +89,8 @@ const emit = defineEmits<{ select: [review: Review] }>()
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  background: var(--brand);
-  color: var(--on-fill);
+  background: #25d366;
+  color: #ffffff;
   opacity: 0;
   transform: scale(0.6);
   transition: opacity 0.18s var(--ease), transform 0.18s var(--ease);
